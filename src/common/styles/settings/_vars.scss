@@ -1,0 +1,48 @@
+@charset "UTF-8";
+
+// 基准的字号
+$base-fontSize:14px;
+// 基准的字体颜色
+$base-fontColor:#333;
+// 基准的 背景颜色
+$base-backgroundColor:#157eea;
+
+// Base Scaffolding Variables
+// ---
+// 基准的按钮色
+$primary-color: #0b83fe;
+// 基准的内容色
+$body-background: #fff;
+// 基准的组件背景色
+$component-background: #E9EAEB;
+// 基准的 悬浮(选中)高亮色
+$background-color-light: #f0f1f1;
+// 基准的头部颜色
+$heading-color: #333;
+// 基准的 边框色
+$border-color: #e9e9e9;
+// 基准的 行高
+$line-height-base: 1.5;
+// 基准的 通用边框倒角
+$border-radius-base: 5px;
+// 基准的小按钮倒角
+$border-radius-sm: 3px;
+// $screen-xs-max: ;
+// $screen-sm-min: ;
+// $screen-sm-max: ;
+// $screen-md-min: ;
+// $screen-md-max: ;
+// $screen-lg-min: ;
+
+// vertical paddings
+$padding-lg: 24px; // containers
+$padding-md: 16px; // small containers and buttons
+$padding-sm: 12px; // Form controls and items
+$padding-xs: 8px; // small items
+
+// Table
+// --
+$table-header-bg: $background-color-light;
+$table-header-color: $heading-color;
+$table-border-color: $border-color;
+

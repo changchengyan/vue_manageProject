@@ -1,0 +1,161 @@
+// 公用
+@font-face {
+  font-family: 'iconfont';  /* project id 1305075 */
+  src: url('//at.alicdn.com/t/font_1305075_b6btvxiylco.eot');
+  src: url('//at.alicdn.com/t/font_1305075_b6btvxiylco.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_1305075_b6btvxiylco.woff2') format('woff2'),
+  url('//at.alicdn.com/t/font_1305075_b6btvxiylco.woff') format('woff'),
+  url('//at.alicdn.com/t/font_1305075_b6btvxiylco.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_1305075_b6btvxiylco.svg#iconfont') format('svg');
+}
+
+.iconfont {
+	font-family: 'iconfont' !important;
+	font-size: 16px;
+	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.icon-warning:before {
+	content: '\e601';
+}
+
+.icon-target:before {
+	content: '\e602';
+}
+
+.icon-monitor:before {
+	content: '\e603';
+}
+
+.icon-pipeDev:before {
+	content: '\e605';
+}
+
+.icon-waterFactory:before {
+	content: '\e606';
+}
+
+.icon-press:before {
+	content: '\e607';
+}
+
+.icon-statisticManage:before {
+	content: '\e608';
+}
+
+.icon-pumpStation:before {
+	content: '\e609';
+}
+
+.icon-video:before {
+	content: '\e60a';
+}
+
+.icon-multMsg:before {
+	content: '\e60b';
+}
+
+.icon-pool:before {
+	content: '\e60c';
+}
+
+.icon-userDeves:before {
+	content: '\e60d';
+}
+
+.icon-reservoir:before {
+	content: '\e60e';
+}
+
+.icon-waterLev:before {
+	content: '\e60f';
+}
+
+.icon-flow:before {
+	content: '\e610';
+}
+
+.icon-hiddenDangerManage:before {
+	content: '\e611';
+}
+
+.icon-qc:before {
+	content: '\e612';
+}
+
+.icon-pipeAccount:before {
+	content: '\e613';
+}
+
+.icon-repairManage:before {
+	content: '\e614';
+}
+
+.icon-emergencyIncident:before {
+	content: '\e615';
+}
+
+.icon-emergencyResource:before {
+	content: '\e616';
+}
+
+.icon-materialSpareParts:before {
+	content: '\e617';
+}
+
+.icon-materialDevice:before {
+	content: '\e618';
+}
+
+.icon-waterCalculate:before {
+	content: '\e61d';
+}
+
+.icon-waterExamine:before {
+	content: '\e61c';
+}
+
+.icon-systemEngineering:before {
+	content: '\e619';
+}
+
+.icon-systemInspectionItem:before {
+	content: '\e61a';
+}
+
+.icon-systemPatrolTeam:before {
+	content: '\e61b';
+}
+
+.icon-dataEnterpriseTable:before {
+  content: "\e61e";
+}
+
+.icon-analysisCounty:before {
+  content: "\e61f";
+}
+
+.icon-systemZone:before {
+  content: "\e620";
+}
+
+.icon-analysisRegion:before {
+  content: "\e621";
+}
+
+// 中源水务公司用水分析
+.icon-zhongyuan:before {
+	content: "\e622";
+}
+
+// 设备管理
+.icon-equipment::before {
+	content: "\e623";
+}
+
+// 巡检计划
+.icon-inspectionPlan::before {
+	content: "\e624";
+}

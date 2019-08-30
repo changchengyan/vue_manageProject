@@ -1,0 +1,126 @@
+<template>
+  <div id="press">
+    <div class="row">
+      <span>起始时间:</span>
+      <input class="Wdate" ref="sdate" v-model="sdate" id="sdate" name="sdate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:'readOnly',minDate:'#F{$dp.$D(\'edate\',{M:-12})}',maxDate:'#F{ $dp.$D(\'edate\')}'})" placeholder="请选择开始时间"  type="text" >
+      <span>至</span>
+      <input class="Wdate" ref="edate" v-model="edate" id="edate" name="edate" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd',readOnly:'readOnly',minDate:'#F{$dp.$D(\'sdate\')}',maxDate:'#F{$dp.$D(\'sdate\',{M:+12})}'})" placeholder="请选择结束时间"   type="text">
+      <el-button type="primary" @click="search">搜索</el-button>
+    </div>
+    <div class="sub-charts">
+      <div id="pipe_press"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+
+  let pipe_press = null;
+  export default {
+    name: 'press',
+    props:['temp_id'],
+    components:{
+
+    },
+    data(){
+      return{
+        sdate:'',
+        edate:''
+      };
+    },
+    methods:{
+      // 水压
+      getPressureList_(){
+
+      },
+      search(){
+        this.getPressureList_();
+      }
+    },
+    mounted(){
+      pipe_press = this.$echarts.init(document.getElementById('pipe_press'));
+      this.getPressureList_();
+
+      // 绘制图表 水位
+      pipe_press.setOption({
+        tooltip: {},
+        grid: {
+          top: '40px',
+          left: '40px',
+          right: '45px',
+          bottom: '30px'
+        },
+        xAxis: {
+          show: true,
+          name: '时间',
+          type: 'time',
+          splitLine: {
+            show: false
+          }
+        },
+        yAxis: {
+          show: true,
+          name: '(MPa)'
+        },
+        color: '#2d9fff',
+        series: [{
+          name: '压力',
+          type: 'line',
+          barWidth: '10%',
+          data:  [
+            [ new Date().getTime()-18000000 ,0.31 ],[new Date().getTime()-15000000 ,0.37],[ new Date().getTime()-12000000 ,0.32 ],
+            [ new Date().getTime()-9000000 ,0.35 ],[new Date().getTime()-6000000 ,0.32],[ new Date().getTime()-3000000 ,0.33 ]
+          ],
+          lineStyle: {
+            opacity: 1
+          }
+        }]
+
+      });
+    },
+    created() {
+      let time = new Date();
+      let currentDate = time.toLocaleDateString();
+      this.edate= this.sdate = currentDate.replace(/\//g,'-');
+    }
+  };
+</script>
+
+<style scoped lang="scss">
+  #press{
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    .row{
+      width: 100%;
+      height: 50px;
+      padding: 10px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      span{
+        display: inline-block;
+        width: 80px;
+        text-align: center;
+      }
+      .el-date-editor.el-input{
+        width: 220px;
+      }
+      .el-button{
+        margin-left: 10px;
+      }
+    }
+    .sub-charts{
+      width: 100%;
+      height: calc(100% - 50px);
+      &>div{
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+</style>
+
+
+
+

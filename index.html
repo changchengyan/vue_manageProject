@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+		<title>东深农饮信息化管理平台</title>
+		<meta name="theme-color" content="#4DBA87">
+		<link rel=" shortcut icon" href="./static/favicon.ico">
+		<link rel="stylesheet" href="./static/videojs/video-js.min.css">
+		<link rel="stylesheet" href="./static/libs/My97DatePicker/skin/WdatePicker.css">
+
+	</head>
+	<body>
+		<noscript>
+			This is your fallback content in case JavaScript fails to load.
+		</noscript>
+		<div id="dituContent"></div>
+		<div id="app"></div>
+		<!--[if lt IE 11]>
+			<style>
+				#app {
+					display: none;
+				}
+
+				html,
+				body {
+					position: relative;
+					height: 100%;
+					min-height: 100%;
+					font-size: 18px;
+				}
+
+				.download {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					width: 400px;
+					height: 400px;
+					margin-top: -200px;
+					margin-left: -200px;
+					text-align: center;
+				}
+
+				.download .desc {
+					margin-top: 20px;
+					text-align: left;
+				}
+
+				.download a {
+					text-decoration: underline;
+				}
+			</style>
+			<div class="download">
+				<img width="150" height="150" src="/error.png" alt="window ie update" />
+				<div class="desc">
+					<h3>由于您当前浏览器版本太低、无法使用网站的相应功能</h3>
+					<ol>
+						<li>请升级浏览器 <a target="_black"
+								href="https://support.microsoft.com/zh-cn/help/17621/internet-explorer-downloads">下载</a></li>
+						<li>或下载使用其他浏览器 <a target="_black" href="http://browsehappy.osfipin.com/">下载</a></li>
+						<li><a href="http://go.microsoft.com/fwlink/?LinkId=324629">下载 IE11浏览器</a></li>
+					</ol>
+				</div>
+			</div>
+		<![endif]-->
+		<script src="./static/config.js"></script>
+		<script src="./static/libs/jquery-3.3.1.min.js"></script>
+		<script src="./static/videojs/video.js"></script>
+		<script src="./static/libs/My97DatePicker/WdatePicker.js"></script>
+
+		<script>
+			// var params = window.location.search;
+			// var num = params.indexOf("?");
+			// if (num == -1) {
+			// 	window.id = 'FarmingDrinkingImage';
+			// } else {
+			// 	params = params.substr(num + 1);
+			// 	window.id = params.split("&")[0].split("=")[1];
+			// }
+
+			// window.id =  '8ae4b2cd6af8d5eb016b254f2dc600db' ; //首页
+			// window.id =  '8ae4b2cd6af8d5eb016b254fae7b00dc';  //管网巡检
+			// window.id =  '8ae4b2cd6af8d5eb016b254ffda600dd';  // 管网档案
+			// window.id =  '8ae4b2cd6af8d5eb016b2550576d00de' ; // 统计分析
+			// window.id = '8ae4b2cd6af8d5eb016b2550f17c00df'; //系统配置
+
+			// window.id = 'FarmingDrinkingImage' // 一张图
+			// window.id = 'FarmingDrinkingData' // 数据管理
+			// window.id = 'FarmingDrinkingSystem' // 系统配置
+			// window.id = 'FarmingDrinkingWater'; // 用水节水
+			// window.id = 'FarmingDrinkingRouting'; //巡检管理
+			// window.id = 'FarmingDrinkingPipe'; //管网管理
+			// window.id = 'FarmingDrinkingMaterial'; //物资管理
+			// window.id = 'FarmingDrinkingContingency'; //应急管理
+
+			videojs.options.flash.swf = './static/videojs/video-js.swf';
+			window.base_api_url = '/ncysgc';
+		</script>
+<!--		<script type="text/javascript" src="http://api.map.baidu.com/api?key=&v=1.1&services=true"></script>-->
+	</body>
