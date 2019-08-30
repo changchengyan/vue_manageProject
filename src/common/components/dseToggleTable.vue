@@ -22,7 +22,13 @@
      *   右侧的带有列表的 table
      */
     export default {
-        props:['innerWidth'],
+        // props:['innerWidth'],
+        props:{
+            innerWidth:{
+                type:String,
+                defaultProps:'300'
+            }
+        },
         name:'dse-toggleTable',
         data() {
             return {

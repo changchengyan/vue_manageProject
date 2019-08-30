@@ -42,11 +42,21 @@ window.onclick = function(){
     if(window.DSE.this_){
         window.DSE.this_.subTreeFlag = false;
     }
-    
+
 };
 export default {
     name:'dse-selectWidthTree',
-    props: ['treeList', 'defaultCompony'],
+    // props: ['treeList', 'defaultCompony'],
+    props:{
+        treeList:{
+            type:Array,
+            defaultProps: []
+        },
+        defaultCompony:{
+            type:String,
+            defaultProps:''
+        }
+    },
     data() {
         return {
             rotateEle: false,
@@ -129,7 +139,7 @@ export default {
         }
     },
     mounted() {
-      
+
     },
     created() {
         let that = this;

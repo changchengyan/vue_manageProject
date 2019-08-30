@@ -79,30 +79,64 @@
          *
          *
          */
-        props: [
-            'showModel',
-            'delNum',
-            'type',
-            'flag',
-            'noText',
-            'yesText',
-            'content',
-            'definedContent'
-        ],
+        // props: [
+        //     'showModel',
+        //     'type',
+        //     'flag',
+        //     'noText',
+        //     'yesText',
+        //     'content',
+        //     'definedContent'
+        // ],
+        props:{
+            // 显隐弹窗
+            showModel:{
+                type:Boolean,
+                defaultProps:false
+            },
+            // 如果为true,则显示保存成功或失败的 弹窗 ,如果为false 则显示是否删除的弹窗
+            type:{
+                type:Boolean,
+                defaultProps:false
+            },
+            // 确认删除的 弹窗中的 文字
+            noText:{
+                type:String,
+                defaultProps:'取消'
+            },
+            // 确认删除的 弹窗中的 文字
+            yesText:{
+                type:String,
+                defaultProps:'确定'
+            },
+            // 保存 成功 或者失败 的文字提示
+            content:{
+                type:String,
+                defaultProps:''
+            },
+            // 确认删除的 提示文字
+            definedContent:{
+                type:String,
+                defaultProps:'你确认删除吗?'
+            }
+        },
         name:'dse-saveStatus',
         data() {
             return {};
         },
         methods: {
+            // 关闭弹窗
             hiddenSelf() {
                 this.$emit('delThis', { modelFlag: false });
             },
+            // 确定 删除 确认 删除成功 必须在外部回调中删除自己
             telUper_del() {
                 let that = this;
-                that.$emit('sureDelThis', { num: that.delNum });
+                that.$emit('sureDelThis', true);
             }
         },
         updated() {
+            // 保存成功或者失败 会自动在 延迟时间后关闭
             let that = this;
             if (that.showModel && that.type) {
                 setTimeout(() => {

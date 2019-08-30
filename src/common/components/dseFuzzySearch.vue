@@ -21,7 +21,27 @@
   };
 
     export default {
-        props: ['searchLists', 'defaultName','closeList_flag'],
+        // props: ['searchLists', 'defaultName','closeList_flag'],
+        props:{
+            searchLists:{
+                type:Array,
+                default(){
+                    return [];
+                }
+            },
+            defaultName:{
+                type:String,
+                default(){
+                    return '';
+                }
+            },
+            closeList_flag:{
+                type:Boolean,
+                default(){
+                    return false;
+                }
+            }
+        },
         name:'dse-fuzzySearch',
         data() {
             return {

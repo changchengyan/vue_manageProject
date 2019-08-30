@@ -26,7 +26,13 @@
 <script>
   export default {
         name: 'dse-tabsToggle',
-        props:['tabList'],
+        // props:['tabList'],
+        props:{
+            tabList:{
+                type:Array,
+                defaultProps:[]
+            }
+        },
         data(){
             return{
                 rockCount:0, //记录左右晃动的次数，负数为左，正数为右

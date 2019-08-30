@@ -21,7 +21,13 @@
 
     export default {
         name:'dse-pageLoading',
-        props:['showAnimate'],
+        // props:['showAnimate'],
+        props:{
+            showAnimate:{
+                type:Boolean,
+                defaultProps:false
+            }
+        },
         data(){
             return{
 

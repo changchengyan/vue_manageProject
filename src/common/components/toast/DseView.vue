@@ -30,7 +30,31 @@
  *     *******************************************
  */
 export default {
-  props: ['showViewModel','title','wd','ht','cht'],
+  // props: ['showViewModel','title','wd','ht','cht'],
+    props:{
+        showViewModel:{
+            type:Boolean,
+            defaultProps:false
+        },
+        title:{
+            type:String,
+            defaultProps:''
+        },
+        wd:{
+            type:String,
+            defaultProps:'50%'
+        },
+        // 弹窗的高度
+        ht:{
+            type:String,
+            defaultProps:''
+        },
+        // 主要内容区的高度
+        cht:{
+            type:String,
+            defaultProps:''
+        }
+    },
     name:'dse-view',
   data() {
     return {};

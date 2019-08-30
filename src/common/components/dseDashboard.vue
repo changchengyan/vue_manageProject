@@ -140,7 +140,13 @@
 
   export default {
     name: 'dse-dashbord',
-    props: ['defaultpanelWidth'],
+    // props: ['defaultpanelWidth'],
+    props:{
+      defaultpanelWidth:{
+        type:String,
+        default:'200px'
+      }
+    },
     data() {
       return {
         width_: '',

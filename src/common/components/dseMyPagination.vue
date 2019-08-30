@@ -22,7 +22,21 @@
 
 <script>
     export default {
-        props: ['noSmall', 'totalPage','currentPage'],
+        // props: ['noSmall', 'totalPage','currentPage'],
+        props:{
+            noSmall:{
+                type:Boolean,
+                defaultProps:false
+            },
+            totalPage:{
+                type:Number,
+                defaultProps: 1
+            },
+            currentPage:{
+                type:Number,
+                defaultProps: 1
+            }
+        },
         name: 'dse-myPagination',
         data() {
             return {

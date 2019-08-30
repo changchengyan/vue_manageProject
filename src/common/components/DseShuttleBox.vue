@@ -27,7 +27,7 @@
                             </div>
                         </div>
                         <template v-if="dept.showSub">
-                             <div class="dept-subStuff" v-for="(item,idx) in dept.userList"  :key="idx">
+                             <div class="dept-subStuff" v-for="(item,idx) in dept.children"  :key="idx">
                                 <input type="checkbox" :value="item" v-model="org.oneStuff_left" @change="selectedThis_stuff_left($event,index,idx,dept.ID,dept.NAME,item)">
                                 <span class="select-img" :class="{selected:item.action}"></span>
                                 <span class="dept-name">{{item.NAME}}</span>
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                         <template v-if="dept.showSub">
-                              <div class="dept-subStuff" v-for="(item,idx) in dept.userList"  :key="idx">
+                              <div class="dept-subStuff" v-for="(item,idx) in dept.children"  :key="idx">
                                 <input type="checkbox" :value="item" v-model="org.oneStuff_right" @change="selectedThis_stuff_right($event,index,idx,dept.ID,dept.NAME,item)">
                                 <span class="select-img" :class="{selected:item.action}"></span>
                                 <span class="dept-name">{{item.NAME}}</span>
@@ -89,14 +89,14 @@
 
 <script>
 /**
- *  该穿梭框 适用于 具有二级列表 同时具有 配置增减服务端已配置的人员功能
+ *  该穿梭框 适用于 具有二级列表 同时具有 配置增减服务端已配置的人员功能  已经格式化完成 需要传入 配对字段
  * 传值 示例
  *  [{
         NAME: "安全部",
         ID: "1",
         action: false,
         showSub: true,
-        userList: [{
+        children: [{
                 NAME: "老王",
                 TELEPHONE: "11111111111",
                 action: false,
@@ -116,9 +116,38 @@
             }
         ]
     }]
+ *
+ *
+ *   类似 样子
+ *
+ *         _   ____________________                    __   ___________________
+ *        |_| |___________________| 搜索               |_| |___________________| 搜索
+ *          _                                          _
+ *         |_| XXXXXXXX                               |_| XXXXXXXX
+ *          _                                          _
+ *         |_| XXXXXXXX                <<              |_| XXXXXXXX
+ *                                     >>
+ *          _                                           _
+ *         |_| XXXXXXXX                                |_| XXXXXXXX
+ *
+ *
  */
+
 export default {
-    props: ['defaultWorkers'],
+    // props: ['defaultWorkers'],
+    props:{
+        defaultWorkers:{
+            type:Array,
+            defaultProps:[]
+        },
+        props:{
+            type:Object,
+            defaultProps: {
+                ID:'ID',
+                children:'children'
+            }
+        }
+    },
     name:'dse-shuttleBox',
     data() {
         return {
@@ -135,13 +164,13 @@ export default {
                 search_hiddenAll_right: false,
 
                 left_all: false,
-                depts_left: [],
+                depts_left: [], //需要显示的 左侧部门列表
                 temp_depts_left: [],
                 get_allDept_left: [],
                 get_oneDept_left: [],
                 get_oneStuff_left: [],
                 right_all: false,
-                depts_right: [],
+                depts_right: [], // 已经选中的到右侧的列表
                 temp_depts_right: [],
                 get_allDept_right: [],
                 get_oneDept_right: [],
@@ -195,10 +224,10 @@ export default {
             let delArr = [];
             if (temp_arr.length > 0) {
                 for (let i = 0; i < temp_arr.length; i++) {
-                    for (let j = 0; j < temp_arr[i].userList.length; j++) {
-                        if (temp_arr[i].userList[j].MSGID) {
+                    for (let j = 0; j < temp_arr[i].children.length; j++) {
+                        if (temp_arr[i].children[j].MSGID) {
                             delArr.push({
-                                'id': '' + temp_arr[i].userList[j].MSGID
+                                'id': '' + temp_arr[i].children[j].MSGID
                             });
                         }
                     }
@@ -225,20 +254,20 @@ export default {
         resetDepts: function (obj, all_or_cancelAll) { //重置部门 选择下的  所有员工的状态
             let temp = obj;
             if (all_or_cancelAll == true) {
-                for (let k = 0; k < obj.userList.length; k++) {
-                    temp.userList[k].action = true;
+                for (let k = 0; k < obj.children.length; k++) {
+                    temp.children[k].action = true;
                 }
             } else {
-                for (let k = 0; k < obj.userList.length; k++) {
-                    temp.userList[k].action = false;
+                for (let k = 0; k < obj.children.length; k++) {
+                    temp.children[k].action = false;
                 }
             }
             return temp;
         },
         reset_stuff: function (obj) {
             let flag = false;
-            for (let k = 0; k < obj.userList.length; k++) {
-                if (obj.userList[k].action == true) {
+            for (let k = 0; k < obj.children.length; k++) {
+                if (obj.children[k].action == true) {
                     flag = true;
                     continue;
                 } else {
@@ -254,16 +283,16 @@ export default {
                 for (let i = 0; i < temp.length; i++) {
                     temp[i].action = true;
                     temp[i].showSub = true;
-                    for (let k = 0; k < temp[i].userList.length; k++) {
-                        temp[i].userList[k].action = true;
+                    for (let k = 0; k < temp[i].children.length; k++) {
+                        temp[i].children[k].action = true;
                     }
                 }
             } else {
                 for (let i = 0; i < temp.length; i++) {
                     temp[i].action = false;
                     temp[i].showSub = false;
-                    for (let k = 0; k < temp[i].userList.length; k++) {
-                        temp[i].userList[k].action = false;
+                    for (let k = 0; k < temp[i].children.length; k++) {
+                        temp[i].children[k].action = false;
                     }
                 }
 
@@ -277,8 +306,8 @@ export default {
             for (let i = 0; i < temp.length; i++) {
                 temp[i].action = false;
                 // temp[i].showSub=true;
-                for (let k = 0; k < temp[i].userList.length; k++) {
-                    temp[i].userList[k].action = false;
+                for (let k = 0; k < temp[i].children.length; k++) {
+                    temp[i].children[k].action = false;
                 }
             }
 
@@ -293,7 +322,7 @@ export default {
             let temp_flag = this.org.selectedAllStuff_left;
             this.org.depts_left = this.resetSelectedAll(that.org.depts_left, temp_flag);
             if (temp_checkBox_flag) {
-                this.org.toRight = JSON.parse(JSON.stringify(this.org.depts_left));
+                this.org.toRight =[...this.org.depts_left];
                 // this.org.selectedAllStuff_right=true;
             } else {
                 this.org.toRight = [];
@@ -330,7 +359,7 @@ export default {
                     for (let i = 0; i < temp_toRight.length; i++) {
                         if (temp_toRight[i].ID == dept.ID) {
                             temp_repeat = false;
-                            temp_toRight[i].userList = dept.userList;
+                            temp_toRight[i].children = [...dept.children];
                             break;
                         }
                     }
@@ -355,14 +384,14 @@ export default {
                 // that.org.selectedAllStuff_right=false
             }
 
-            this.org.toRight = JSON.parse(JSON.stringify(temp_toRight));
+            this.org.toRight = [...temp_toRight];
 
         }, //  左侧 在单个部门选择全部员工
         selectedThis_stuff_left: function (event, parentIndex, idx, dept_id, dept_name, stuff) {
             let that = this;
 
-            this.org.depts_left[parentIndex].userList[idx].action = !this.org.depts_left[parentIndex].userList[idx].action;
-            let temp_flag = this.org.depts_left[parentIndex].userList[idx].action;
+            this.org.depts_left[parentIndex].children[idx].action = !this.org.depts_left[parentIndex].children[idx].action;
+            let temp_flag = this.org.depts_left[parentIndex].children[idx].action;
 
             //判断部门是否满选
             let dept_flag = this.reset_stuff(this.org.depts_left[parentIndex]);
@@ -390,8 +419,8 @@ export default {
                         if (temp_toRight[i].ID == dept_id) {
                             temp_dif_flag = true;
                             temp_toRight[i].showSub = true;
-                            let temp_arr = temp_toRight[i].userList.concat([stuff]);
-                            temp_toRight[i].userList = that.removeCommen(temp_arr);
+                            let temp_arr = temp_toRight[i].children.concat([stuff]);
+                            temp_toRight[i].children = that.removeCommen(temp_arr);
                             break;
                         }
                     }
@@ -401,7 +430,7 @@ export default {
                             NAME: dept_name,
                             showSub: true,
                             action: true,
-                            userList: [stuff]
+                            children: [stuff]
                         });
                     }
                 } else {
@@ -410,16 +439,16 @@ export default {
                         NAME: dept_name,
                         showSub: true,
                         action: true,
-                        userList: [stuff]
+                        children: [stuff]
                     });
                 }
             } else {
                 if (temp_toRight.length > 0) {
                     for (let i = 0; i < temp_toRight.length; i++) {
-                        for (let j = 0; j < temp_toRight[i].userList.length; j++) {
-                            if (temp_toRight[i].ID == dept_id && temp_toRight[i].userList[j].ID == stuff.ID) {
-                                temp_toRight[i].userList.splice(j, 1);
-                                if (temp_toRight[i].userList.length == 0) {
+                        for (let j = 0; j < temp_toRight[i].children.length; j++) {
+                            if (temp_toRight[i].ID == dept_id && temp_toRight[i].children[j].ID == stuff.ID) {
+                                temp_toRight[i].children.splice(j, 1);
+                                if (temp_toRight[i].children.length == 0) {
                                     temp_toRight.splice(i, 1);
                                 }
                                 break;
@@ -440,19 +469,19 @@ export default {
         searchSomething_left: function () {
             this.org.search_hiddenAll_left = true;
             let temp_arr = [];
-            let temp_depts_left = JSON.parse(JSON.stringify(this.org.temp_depts_left));
+            let temp_depts_left = [...this.org.temp_depts_left];
             let temp_name = this.org.left_name;
             if (temp_name && temp_depts_left.length) {
                 for (let i = 0; i < temp_depts_left.length; i++) {
-                    for (let j = 0; j < temp_depts_left[i].userList.length; j++) {
-                        if (temp_depts_left[i].userList[j].NAME.indexOf(this.org.left_name) >= 0) {
+                    for (let j = 0; j < temp_depts_left[i].children.length; j++) {
+                        if (temp_depts_left[i].children[j].NAME.indexOf(this.org.left_name) >= 0) {
                             let temp_json = {};
                             temp_json.action = temp_depts_left[i].action;
                             temp_json.ID = temp_depts_left[i].ID;
                             temp_json.showSub = temp_depts_left[i].showSub;
                             temp_json.NAME = temp_depts_left[i].NAME;
-                            temp_json.userList = [];
-                            temp_json.userList = [temp_depts_left[i].userList[j]];
+                            temp_json.children = [];
+                            temp_json.children = [temp_depts_left[i].children[j]];
                             temp_arr.push(temp_json);
                         }
                     }
@@ -510,7 +539,7 @@ export default {
                     for (let i = 0; i < temp_toLeft.length; i++) {
                         if (temp_toLeft[i].ID == dept.ID) {
                             temp_repeat = false;
-                            temp_toLeft[i].userList = dept.userList;
+                            temp_toLeft[i].children = [...dept.children];
                             break;
                         }
                     }
@@ -539,8 +568,8 @@ export default {
         selectedThis_stuff_right: function (event, parentIndex, idx, dept_id, dept_name, stuff) { // 右侧 选择单个部门  单个员工
             let that = this;
 
-            this.org.depts_right[parentIndex].userList[idx].action = !this.org.depts_right[parentIndex].userList[idx].action;
-            let temp_flag = this.org.depts_right[parentIndex].userList[idx].action;
+            this.org.depts_right[parentIndex].children[idx].action = !this.org.depts_right[parentIndex].children[idx].action;
+            let temp_flag = this.org.depts_right[parentIndex].children[idx].action;
 
             //判断部门是否满选
             let dept_flag = this.reset_stuff(this.org.depts_right[parentIndex]);
@@ -568,8 +597,8 @@ export default {
                         if (temp_toLeft[i].ID == dept_id) {
                             temp_dif_flag = true;
                             temp_toLeft[i].showSub = true;
-                            let temp_arr = temp_toLeft[i].userList.concat([stuff]);
-                            temp_toLeft[i].userList = that.removeCommen(temp_arr);
+                            let temp_arr = temp_toLeft[i].children.concat([stuff]);
+                            temp_toLeft[i].children = that.removeCommen(temp_arr);
                             break;
                         }
                     }
@@ -579,7 +608,7 @@ export default {
                             NAME: dept_name,
                             showSub: true,
                             action: true,
-                            userList: [stuff]
+                            children: [stuff]
                         });
                     }
 
@@ -589,16 +618,16 @@ export default {
                         NAME: dept_name,
                         showSub: true,
                         action: true,
-                        userList: [stuff]
+                        children: [stuff]
                     });
                 }
             } else {
                 if (temp_toLeft.length > 0) {
                     for (let i = 0; i < temp_toLeft.length; i++) {
-                        for (let j = 0; j < temp_toLeft[i].userList.length; j++) {
-                            if (temp_toLeft[i].ID == dept_id && temp_toLeft[i].userList[j].ID == stuff.ID) {
-                                temp_toLeft[i].userList.splice(j, 1);
-                                if (temp_toLeft[i].userList.length == 0) {
+                        for (let j = 0; j < temp_toLeft[i].children.length; j++) {
+                            if (temp_toLeft[i].ID == dept_id && temp_toLeft[i].children[j].ID == stuff.ID) {
+                                temp_toLeft[i].children.splice(j, 1);
+                                if (temp_toLeft[i].children.length == 0) {
                                     temp_toLeft.splice(i, 1);
                                 }
                                 break;
@@ -621,15 +650,15 @@ export default {
             let temp_name = this.org.right_name;
             if (temp_name && temp_depts_right.length) {
                 for (let i = 0; i < temp_depts_right.length; i++) {
-                    for (let j = 0; j < temp_depts_right[i].userList.length; j++) {
-                        if (temp_depts_right[i].userList[j].NAME.indexOf(this.org.right_name) >= 0) {
+                    for (let j = 0; j < temp_depts_right[i].children.length; j++) {
+                        if (temp_depts_right[i].children[j].NAME.indexOf(this.org.right_name) >= 0) {
                             let temp_json = {};
                             temp_json.action = temp_depts_right[i].action;
                             temp_json.ID = temp_depts_right[i].ID;
                             temp_json.showSub = temp_depts_right[i].showSub;
                             temp_json.NAME = temp_depts_right[i].NAME;
-                            temp_json.userList = [];
-                            temp_json.userList = [temp_depts_right[i].userList[j]];
+                            temp_json.children = [];
+                            temp_json.children = [temp_depts_right[i].children[j]];
                             temp_arr.push(temp_json);
                         }
                     }
@@ -659,8 +688,8 @@ export default {
                         if (temp_toRight[j].ID == temp_depts_right[k].ID) {
                             repeat[j] = false;
                             temp_depts_right[k].showSub = true;
-                            let temp_arr = temp_depts_right[k].userList.concat(temp_toRight[j].userList);
-                            temp_depts_right[k].userList = that.removeCommen(temp_arr);
+                            let temp_arr = temp_depts_right[k].children.concat(temp_toRight[j].children);
+                            temp_depts_right[k].children = that.removeCommen(temp_arr);
                             break;
                         }
                     }
@@ -696,11 +725,11 @@ export default {
             let temp_depts_right = JSON.parse(JSON.stringify(this.org.depts_right));
             let temp_del = [];
             for (let i = 0; i < temp_toLeft.length; i++) {
-                for (let j = 0; j <= temp_toLeft[i].userList.length; j++) {
-                    if (temp_toLeft[i].userList[j] && temp_toLeft[i].userList[j].MSGID) {
+                for (let j = 0; j <= temp_toLeft[i].children.length; j++) {
+                    if (temp_toLeft[i].children[j] && temp_toLeft[i].children[j].MSGID) {
                         temp_del.push(
                             JSON.parse(JSON.stringify({
-                                'id': '' + temp_toLeft[i].userList[j].MSGID
+                                'id': '' + temp_toLeft[i].children[j].MSGID
                             }))
                         );
                     }
@@ -708,19 +737,19 @@ export default {
             }
             let len_j = temp_depts_copy.length;
             for (let j = 0; j < len_j; j++) {
-                temp_depts_copy[j].userList = [];
+                temp_depts_copy[j].children = [];
             }
             for (let n = 0; n < temp_depts_right.length; n++) {
-                for (let m = 0; m < temp_depts_right[n].userList.length; m++) {
-                    if (temp_depts_right[n].userList.length > 0) {
-                        if (!temp_depts_right[n].userList[m].action) {
-                            temp_depts_copy[n].userList.push(temp_depts_right[n].userList[m]);
+                for (let m = 0; m < temp_depts_right[n].children.length; m++) {
+                    if (temp_depts_right[n].children.length > 0) {
+                        if (!temp_depts_right[n].children[m].action) {
+                            temp_depts_copy[n].children.push(temp_depts_right[n].children[m]);
                         }
                     }
                 }
             }
             let arr_right = temp_depts_copy.filter(function (item) {
-                return item.userList.length > 0;
+                return item.children.length > 0;
             });
             this.org.depts_right = arr_right;
 
@@ -740,16 +769,16 @@ export default {
             let temp_arr = this.org.depts_right;
             let post_arr = [];
             for (let i = 0; i < temp_arr.length; i++) {
-                for (let j = 0; j < temp_arr[i].userList.length; j++) {
-                    if (temp_arr[i].userList[j].MSGID) {
+                for (let j = 0; j < temp_arr[i].children.length; j++) {
+                    if (temp_arr[i].children[j].MSGID) {
                         return;
                     } else {
                         post_arr.push({
                             'pid': '',
-                            'msgType': '' + temp_arr[i].userList[j].TYPE,
-                            'msgTo': '' + temp_arr[i].userList[j].ID,
-                            'name': '' + temp_arr[i].userList[j].NAME,
-                            'phoneNum': '' + temp_arr[i].userList[j].TELEPHONE,
+                            'msgType': '' + temp_arr[i].children[j].TYPE,
+                            'msgTo': '' + temp_arr[i].children[j].ID,
+                            'name': '' + temp_arr[i].children[j].NAME,
+                            'phoneNum': '' + temp_arr[i].children[j].TELEPHONE,
                             'dept': '' + temp_arr[i].ID
                         });
                         // break;
@@ -779,13 +808,51 @@ export default {
             //     }
             //
             // })
-
+        },
+        formateList(list){
+            let that = this;
+            if(!list) return [];
+            if(!(list instanceof Array)) return  [];
+            let tempList = [...list];
+            tempList.map(val=>{
+                val.action = false;
+                val.ID = val[that.props['ID']];
+            });
+            return  tempList;
         }
 
     },
     created() {
-        this.org.depts_left = this.defaultWorkers;
-        this.org.temp_depts_left = this.defaultWorkers;
+        // this.org.depts_left = [...this.defaultWorkers];
+        // this.org.temp_depts_left = this.defaultWorkers;
+    },
+    watch:{
+
+        defaultWorkers:{
+            handler:(newVal,oldVal)=>{
+
+                let that = this;
+               let tempList = [];
+
+               this.defaultWorkers.map(val=>{
+                    tempList.push({
+                        ID:val[that.props['ID']],
+                        action:false,
+                        showSub:true,
+                        children: that.formateList(val[that.props['children']])
+                    });
+               });
+
+               that.org.depts_left = [...tempList];
+               that.org.temp_depts_left = [...tempList];
+
+               return;
+            },
+            immediate:true,
+            deep:true
+        }
+
+
     }
 };
 </script>

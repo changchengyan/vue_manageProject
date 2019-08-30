@@ -19,7 +19,17 @@
 <script>
 
 export default {
-    props:['treeList','title'],
+    // props:['treeList','title'],
+    props:{
+        treeList:{
+            type:Array,
+            defaultProps: []
+        },
+        title:{
+            type:String,
+            defaultProps:''
+        }
+    },
     name:'dse-layerOut',
     data() {
         return {
@@ -83,7 +93,7 @@ export default {
             height: calc(100% - 30px);
             overflow-y: auto;
         }
-        
+
     }
 }
 </style>

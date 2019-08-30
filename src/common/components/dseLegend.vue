@@ -18,7 +18,13 @@
 <script>
     export default {
         name: 'dse-legend',
-        props:['defualName'],
+        // props:['defualName'],
+        props:{
+            defualName:{
+                type:String,
+                defaultProps:''
+            }
+        },
         data(){
             return{
                 legendFlag:false

@@ -25,7 +25,17 @@
 <script>
     export default {
         name: 'dse-bgModel',
-        props:['id','tips','modelFlag'],
+        // props:['tips','modelFlag'],
+        props:{
+            tips:{
+                type:String,
+                defaultProps:''
+            },
+            modelFlag:{
+                type:Boolean,
+                defaultProps: false
+            }
+        },
         data(){
             return{
                 modelShowFlag:false,

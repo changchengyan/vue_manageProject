@@ -20,7 +20,13 @@
    */
 
   export default {
-    props:['showAnimate'],
+    // props:['showAnimate'],
+    props:{
+      showAnimate:{
+        type:Boolean,
+        defaultProps:false
+      }
+    },
     name:'dse-loadingAnimation',
     data(){
       return{

@@ -93,7 +93,17 @@
     // } from '@/api/interfaces/pipeSetting_api';
 
     export default {
-        props: ['videoList_','viewpart'],
+        // props: ['videoList_','viewpart'],
+        props:{
+            videoList_:{
+                type:Array,
+                defaultProps:[]
+            },
+            viewpart:{
+                type:Number,
+                defaultProps: 4
+            }
+        },
         name:'dse-liveVideo',
         data() {
             return {

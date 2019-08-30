@@ -23,7 +23,13 @@
 
 <script>
 export default {
-    props: ['closedModel_flag'],
+    // props: ['closedModel_flag'],
+    props:{
+        closedModel_flag:{
+            type:Boolean,
+            defaultProps:false
+        }
+    },
     name:'dse-selectTips',
     data() {
         return {

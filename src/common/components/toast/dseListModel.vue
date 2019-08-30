@@ -16,7 +16,17 @@
 <script>
     export default {
         name: 'dse-listModel',
-        props:['list','tips'],
+        // props:['list','tips'],
+        props:{
+            list:{
+                type:Array,
+                defaultProps:[]
+            },
+            tips:{
+                type:String,
+                defaultProps:''
+            }
+        },
         data(){
             return{
                 modelShowFlag:false

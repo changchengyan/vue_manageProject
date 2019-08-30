@@ -48,7 +48,13 @@
 <script>
     export default {
         name:'dse-menu',
-        props: ['menu'],
+        // props: ['menu'],
+        props:{
+            menu:{
+                type:Array,
+                defaultProps:[]
+            }
+        },
         data() {
             return {
                 menuList: [],

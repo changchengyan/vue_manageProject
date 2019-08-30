@@ -15,7 +15,24 @@
 <script>
     export default {
       name: 'dse-normalModel',
-      props:['tips','modelFlag', 'onHandleModelClose','top_'],
+      // props:['tips','modelFlag', 'onHandleModelClose','top_'],
+        props:{
+            modelFlag:{
+                type:Boolean,
+                defaultProps:false
+            },
+            tips:{
+                type:String,
+                defaultProps:''
+            },
+            onHandleModelClose:{
+                type:Function,
+            },
+            top_:{
+                type:String,
+                defaultProps:'100px'
+            }
+        },
       data(){
         return{
           modelShowFlag:false

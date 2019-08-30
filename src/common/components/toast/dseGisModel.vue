@@ -13,7 +13,30 @@
 <script>
     export default {
         name: 'dse-gisModel',
-        props:['showFlag','width_','height_','top_','left_','tips'],
+        // props:['showFlag','width_','top_','left_','tips'],
+        props:{
+            showFlag:{
+                type:Boolean,
+                defaultProps:false
+            },
+            tips:{
+                type:String,
+                defaultProps:''
+            },
+            width_:{
+                type:String,
+                defaultProps:'300px'
+            },
+            left_:{
+                type:String,
+                defaultProps:'0px'
+            },
+            top_:{
+                type:String,
+                defaultProps:'0px'
+            }
+        },
+
       data(){
           return{
               modelShowFlag:false

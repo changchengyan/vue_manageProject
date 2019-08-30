@@ -36,7 +36,21 @@
  *     *******************************************
  */
 export default {
-  props: ['showEditModel','title','height_'],
+  // props: ['showEditModel','title','height_'],
+    props:{
+        showEditModel:{
+            type:Boolean,
+            defaultProps:false
+        },
+        title:{
+            type:String,
+            defaultProps:''
+        },
+        height_:{
+            type:String,
+            defaultProps:'400px'
+        }
+    },
     name:'dse-edit',
   data() {
     return {};

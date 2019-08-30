@@ -15,7 +15,18 @@
 
 <script>
     export default {
-        props:['tabs_','activedIndex'],
+        // props:['tabs_','activedIndex'],
+        props:{
+            tabs_:{
+                type:Array
+            },
+            activedIndex:{
+                type: Number,
+                default(){
+                    return [];
+                }
+            }
+        },
         name:'dse-rTableCard',
         data(){
             return{

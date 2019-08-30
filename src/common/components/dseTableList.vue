@@ -17,10 +17,20 @@
     export default {
         name:'dse-tableList',
         components: {DseMyPagination},
-        props:['totalNum','currentPage'],
+        // props:['totalNum','currentPage'],
+        props:{
+            totalNum:{
+                type:Number,
+                defaultProps:1
+            },
+            currentPage:{
+                type:Number,
+                defaultProps: 1
+            }
+        },
         data() {
             return {
-               
+
             };
         },
         methods:{

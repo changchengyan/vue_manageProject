@@ -15,7 +15,13 @@
 <script>
   export default {
     name: 'dse-separatingTabs',
-    props: ['tabs', 'id'],
+    // props: ['tabs'],
+    props:{
+      tabs:{
+        type:Array,
+        defaultProps:[]
+      }
+    },
     data() {
       return {
         activedTabIndex: 0,

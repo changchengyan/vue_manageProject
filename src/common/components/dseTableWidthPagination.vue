@@ -24,7 +24,17 @@
 
 <script>
     export default {
-        props:['totalNum','currentPage'],
+        // props:['totalNum','currentPage'],
+        props:{
+            totalNum:{
+                type:Number,
+                defaultProps:1
+            },
+            currentPage:{
+                type:Number,
+                defaultProps:1
+            }
+        },
         name: 'dse-tableWidthPagination',
         data() {
             return {

@@ -15,7 +15,13 @@
 <script>
     export default {
         name: 'dse-tabsUnderline',
-        props:['tabs'],
+        // props:['tabs'],
+        props:{
+            tabs:{
+                type:Array,
+                defaultProps:[]
+            }
+        },
         data(){
             return{
                 activedTabIndex:0,
