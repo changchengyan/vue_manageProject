@@ -63,7 +63,7 @@
 
 <script>
     import {mapGetters} from 'vuex';
-    import DseTableList from '../../common/components/dseTableList';
+    import DseTableList from '../../common/components/DseTableList';
 
     export default {
         name: 'pipeMsg',

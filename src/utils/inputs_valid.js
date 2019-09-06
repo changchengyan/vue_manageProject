@@ -9,7 +9,7 @@ export default class Valid{
     isNumber(val){
         let  temp =val;
         if(!val) return ;
-        let reg =  /^[1-9][0-9]*([.][0-9]{1,2})?$/;
+        let reg =  /^[0-9]+\.?[0-9]+?$/;
         return  reg.test(temp);
     }
     // 手机号
@@ -48,7 +48,7 @@ export default class Valid{
     // 只包含 字母和数字
     isNotHan(val){
         if(!val) return ;
-        let re = /^[a-zA-Z0-9]+$/;
+        let re = /^[a-zA-Z_\-0-9]+$/;
         return re.test(val);
     }
     // 验证经度

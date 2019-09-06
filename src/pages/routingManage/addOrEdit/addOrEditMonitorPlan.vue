@@ -134,10 +134,10 @@
 </template>
 <script>
   import * as esriLoader from 'esri-loader';
-  import DseToggleTable from '../../../common/components/dseToggleTable';
-  import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
+  import DseToggleTable from '../../../common/components/DseToggleTable';
+  import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
 
-  import DseGisModel from '../../../common/components/toast/dseGisModel';
+  import DseGisModel from '../../../common/components/toast/DseGisModel';
   import {queryEle, updateAttr} from '../../../utils/gisUtils';
 
   let options = {

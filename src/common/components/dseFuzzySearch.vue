@@ -3,8 +3,8 @@
         <input  @keyup.13='getLists' v-model='pipeName' placeholder='回车模糊查询数据' /> <span class="searchSomething" @click="search">搜索</span>
         <div class='sub_searchList' v-if='colseFlag&&lists&&lists.length>0' >
             <div class='searchItem'   @click='selectThis(item)' v-for='(item,index) in lists' :key='index' >
-              <img :src="staticPath+'/images/searchIcon/'+item.type+'.png'" alt="">
-              <span>{{item.name}}</span>
+              <img :src="staticPath+'/images/searchIcon/'+item.jctype+'.png'" alt="">
+              <span>{{item.stnm}}</span>
             </div>
         </div>
     </div>
@@ -53,7 +53,7 @@
         },
         methods: {
             selectThis(val) {
-                this.pipeName = val.name;
+                this.pipeName = val.stnm;
                 this.colseFlag = false;
                 this.$emit('selectThis', val);
             },
@@ -68,7 +68,7 @@
           },
           searchList(list){
               this.lists = list;
-             this.colseFlag = true;
+              this.colseFlag = true;
           }
         },
         computed: {
@@ -98,7 +98,7 @@
                     }else{
                         this.lists = newValue;
                     }
-                    // console.log(this.lists)
+                    this.colseFlag = true;
                 },
                 immediate:true,
                 deep:true
@@ -162,7 +162,7 @@
                 &:hover {
                     background: #66b1ff;
                     color: #fff;
-                    border-radius: 5px;
+                    /*border-radius: 5px;*/
                 }
               img{
                 width: 12px;

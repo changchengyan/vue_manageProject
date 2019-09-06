@@ -261,9 +261,9 @@
 </template>
 
 <script>
-import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
-import DseLoadingAnimation from '../../common/components/dseLoadingAnimation';
-import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
+import DseLoadingAnimation from '../../common/components/DseLoadingAnimation';
+import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
 
 
 export default {

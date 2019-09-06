@@ -19,7 +19,7 @@
 <script>
     import SkMsg from './skMsg';
     import SkBaseMsg from './skBaseMsg';
-    import DseLiveVideo from '../../../common/components/dseLiveVideo';
+    import DseLiveVideo from '../../../common/components/DseLiveVideo';
     import SkViewRecord from './skViewRecord';
     export default {
         name: 'toggleSk',

@@ -1,4 +1,4 @@
-module.exports = [{
+export const listHead1 = [{
 		label: '片区',
 		value: 'a'
 	}, {

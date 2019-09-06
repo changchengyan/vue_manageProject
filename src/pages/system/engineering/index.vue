@@ -5,9 +5,11 @@
 			<div class="globalHandle">
 				<div class="start">
 					<el-form :inline="true" class="form">
-						<el-form-item label="关键字:"><el-input v-model="searchData.keywords" placeholder="请输入工程名称关键字" @keyup.enter.native="onHandleSearch"></el-input></el-form-item>
-						<el-form-item label="工程类型:">
-							<el-select v-model="searchData.prtype" placeholder="请选择工程类型" @keyup.enter.native="onHandleSearch">
+						<el-form-item label="关键字:">
+							<el-input v-model="searchData.keywords" placeholder="请输入工程名称关键字" @keyup.enter.native="onHandleSearch"></el-input>
+						</el-form-item>
+						<el-form-item label="站点类型:">
+							<el-select v-model="searchData.prtype" placeholder="请选择站点类型" @keyup.enter.native="onHandleSearch">
 								<el-option value="" label="全部类型"></el-option>
 								<el-option v-for="item in prtypeList" :key="item.value" :label="item.name" :value="item.value"></el-option>
 							</el-select>
@@ -19,7 +21,8 @@
 			</div>
 			<!-- 表格 -->
 			<div class="globalTable">
-				<dse-table-width-pagination :current-page="pagination.current" :total-num="pagination.total" @goto_page="onHandleGotoPage">
+				{{ pagination.current }}
+				<dse-table-width-pagination :current-page="Number(pagination.current || '')" :total-num="Number(pagination.total || '')" @goto_page="onHandleGotoPage">
 					<thead>
 						<tr>
 							<th v-for="(item, key) in columns" :key="key">
@@ -115,7 +118,7 @@ import {
 	// 获取所有工程列表
 	getWrCwsBList
 } from '../../../api/interfaces/system_api';
-import DseTableWidthPagination from '../../../common/components/dseTableWidthPagination';
+import DseTableWidthPagination from '../../../common/components/DseTableWidthPagination';
 
 const PROFILE_NAME = 'systemEngineeringModify';
 // const PROFILE_NAME = '/system/engineering/modify';
@@ -133,7 +136,7 @@ export default {
 			},
 			prtypeList: [],
 			pagination: {
-				current: '',
+				current: window.localStorage.getItem('current') || '0',
 				total: 0
 			},
 			confirm: {
@@ -155,6 +158,9 @@ export default {
 				current: pageNum,
 				pageSize
 			};
+
+			// 记住当前页
+			window.localStorage.setItem('current', JSON.stringify(pageNum));
 
 			// 更新工程配置列表
 			that._getGcglList();
@@ -283,14 +289,16 @@ export default {
 			/**
 			 * 获取供水工程列表
 			 * @param {code}      [false string]    字典代码
-			 * 		CWS_TP ：农村供水工程类型
-					RUN_COND：运行状况
-					PR_TYPE：所属工程类型
-					ST_TYPE：监测类型
-					ST_JC_TYPE：监测对象
+			 *	CWS_TP ：农村供水工程类型
+			 *	RUN_COND：运行状况
+			 *	PR_TYPE：所属工程类型
+			 *	ST_TYPE：监测类型
+			 *	ST_JC_TYPE：监测对象
+			 *	ST_SZ_JCX:水质监测项 Ph、浊度、余氯
 			 */
 			const param = {
 				code: 'PR_TYPE'
+				// values: '7,16,7,5,2',
 			};
 			getDictListByValues(param, that)
 				.then(results => {
@@ -319,6 +327,7 @@ export default {
 					if (status) {
 						const values = Array.isArray(data)
 							? data.map((item = {}) => ({
+									adcd: item.adcd,
 									value: item.cwsCd,
 									label: item.cwsNm
 							  }))
@@ -359,27 +368,27 @@ export default {
 					const { pageNum, total, list } = data;
 
 					/*
-					loc 			所在地
-					prtypenm 		工程类型名称
-					prtype 			工程类型
-					gldw 			管理单位
-					adcd 			所属分区
-					lttd 			经度
-					adnm 			所属分区名称
-					cwsnm 			所属供水工程名称
-					prnm 			工程名称
-					prcd 			工程编码
-					runCondnm 		运行状况：1在用良好，0停用
-					lgtd 			纬度
-					compym 			建站年月
-					deadV 			死库容
-					deadZ 			死水位
-					totV 			总库容
-					frscV 			调洪库容
-					dszfl 			设计规模（万方/天）
-					desHead 		设计扬程
-					dsincp 			装机容量(kW)
-					*/
+                            loc 			所在地
+                            prtypenm 		工程类型名称
+                            prtype 			工程类型
+                            gldw 			管理单位
+                            adcd 			所属分区
+                            lttd 			经度
+                            adnm 			所属分区名称
+                            cwsnm 			所属供水工程名称
+                            prnm 			工程名称
+                            prcd 			工程编码
+                            runCondnm 		运行状况：1在用良好，0停用
+                            lgtd 			纬度
+                            compym 			建站年月
+                            deadV 			死库容
+                            deadZ 			死水位
+                            totV 			总库容
+                            frscV 			调洪库容
+                            dszfl 			设计规模（万方/天）
+                            desHead 		设计扬程
+                            dsincp 			装机容量(kW)
+                            */
 
 					if (status) {
 						that.pagination.current = pageNum;
@@ -389,7 +398,7 @@ export default {
 							compym: String(item.compym).slice(0, 4) + '-' + String(item.compym).slice(4, 6),
 							// type: item.type === 1 ? '水厂' : item.type === 2 ? '哈哈' : item.type === 0 ? '嘻嘻' : '暂未',
 							adnm: item.adnm ? item.adnm : '/',
-							runCondnm: item.runCondnm ? '启用' : '停用'
+							runCondnm: item.runCond === '1' ? '启用' : '停用'
 						}));
 
 						that.loading = false;
@@ -408,10 +417,14 @@ export default {
 		_initialization() {
 			const that = this;
 
+			// 回填当前页
+			const current = window.localStorage.getItem('current');
+			// console.warn(current);
 			// 初始化分页
 			that.pagination = {
+				...that.pagination,
 				total: 10,
-				current: 1,
+				current: current ? current : 1,
 				pageSize: 10,
 				pageSizes: [10, 15, 20, 25, 30]
 			};
@@ -483,11 +496,22 @@ export default {
 </script>
 
 <style scoped="scoped" lang="scss">
-
-
 .block {
 	/deep/ .el-form-item__label {
 		line-height: 30px !important;
+	}
+
+	tbody{
+		tr{
+			td:first-child{
+				span{
+					text-decoration: initial;
+					cursor: initial;
+					color: #333;
+				}
+
+			}
+		}
 	}
 }
 </style>

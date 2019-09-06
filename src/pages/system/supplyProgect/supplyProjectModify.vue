@@ -24,7 +24,7 @@
                     <el-form-item label="工程名称:" prop="cwsNm">
                         <el-input v-model="formData.cwsNm" placeholder="工程名称"></el-input>
                     </el-form-item>
-                    <el-form-item label="供水日规模:" prop="desWsScal">
+                    <el-form-item label="供水日规模(m³):" prop="desWsScal">
                         <el-input v-model="formData.desWsScal" placeholder="供水日规模"></el-input>
                     </el-form-item>
                     <el-form-item label="工程类型:" prop="cwsTp">
@@ -38,7 +38,7 @@
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="设计供水人口:" prop="desWsPp">
+                    <el-form-item label="设计供水人口(人):" prop="desWsPp">
                         <el-input v-model="formData.desWsPp" placeholder="设计供水人口"></el-input>
                     </el-form-item>
 <!--                    <el-form-item label="卫生许可证编号:" prop="sanLicSn">-->
@@ -60,7 +60,7 @@
                     <el-form-item label="管理单位:" prop="engMan">
                         <el-input v-model="formData.engMan" placeholder="管理单位"></el-input>
                     </el-form-item>
-                    <el-form-item label="受益行政村数量:" prop="benVilNum">
+                    <el-form-item label="受益行政村数量(个):" prop="benVilNum">
                         <el-input v-model="formData.benVilNum" placeholder="收益行政村数量"></el-input>
                     </el-form-item>
                     <el-form-item label="收费形式:" prop="chargForm">
@@ -74,7 +74,7 @@
                         </el-select>
                     </el-form-item>
 
-                    <el-form-item label="备注:"  class="long-text">
+                    <el-form-item label="备注:" prop="nt"  class="long-text">
                         <el-input  v-model="formData.nt"  type="textarea" :rows="5" placeholder="备注"></el-input>
                     </el-form-item>
 
@@ -94,59 +94,52 @@
 </template>
 
 <script>
-    import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
+    import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
 
     import {getAreaList} from '../../../api/interfaces/common_api';
     import {saveOrUpWrCwsB, supplyWaterCheckExist} from '../../../api/interfaces/system_api';
     import {VDATA} from '../../../utils/el_validater';
 
 
-    function limitStr(rule,val,callBack) {
-        let vdt = VDATA(val, {
-            'maxlength':{param:30,msg:'您输入的字符超过30个'}
-        });
-        if (!vdt.result) {
-            callBack(new Error(vdt.msg));
-        } else {
-            callBack();
-        }
-    }
-
     function isNumber(rule,val,callBack) {
         let vdt = VDATA(val, {
             'number':{msg:'您输入的数字有误'}
         });
         if (!vdt.result) {
-            callBack(new Error(vdt.msg));
+            if(rule.required){
+                callBack(new Error(vdt.msg));
+            }else{
+                if(val!=''&&val!=null) {
+                    callBack(new Error(vdt.msg));
+                }
+            }
         } else {
             callBack();
         }
     }
 
-    function isDigits(rule,val,callBack) {
-        let vdt = VDATA(val, {
-                'digits':{msg:'您输入的不是整数'}
-            }
-            );
-        if (!vdt.result) {
-            callBack(new Error(vdt.msg));
-        } else {
-            callBack();
-        }
-    }
 
     //限制 最大整数
     function isDigitsAndRange(rule,val,callBack) {
-        let vdt = VDATA(val, {
-                'digits':{msg:'您输入的不是整数'},
-                'range':{param:[0,999],msg:'请输入小于999的整数!'}
+
+            let vdt = VDATA(val, {
+                    'digits':{msg:'您输入的不是整数'},
+                    'range':{param:[0,999],msg:'请输入小于999的整数!'}
+                }
+            );
+
+            if (!vdt.result) {
+                if(rule.required){
+                    callBack(new Error(vdt.msg));
+                }else{
+                   if(val!=''&&val!=null) {
+                        callBack(new Error(vdt.msg));
+                    }
+                }
+            } else {
+                callBack();
             }
-        );
-        if (!vdt.result) {
-            callBack(new Error(vdt.msg));
-        } else {
-            callBack();
-        }
+
     }
 
 
@@ -155,7 +148,13 @@
             'notHan':{msg:'请输入字母或者数字!'}
         });
         if (!vdt.result) {
-            callBack(new Error(vdt.msg));
+            if(rule.required){
+                callBack(new Error(vdt.msg));
+            }else{
+                if(val!=''&&val!=null) {
+                    callBack(new Error(vdt.msg));
+                }
+            }
         } else {
             callBack();
         }
@@ -183,67 +182,88 @@
                     ],
                     cwsNm: [
                         {
-                            validator:limitStr,
                             required:true,
-                            trigger: 'blur'
+                            trigger: 'blur',
+                            max: 30,
+                            message:'工程名称必填'
                         }
                     ],
                     cwsTp: [
                         {
                             required:true,
+                            message:'工程类型不能为空',
                             trigger: 'blur'
                         }
                     ],
                     desWsScal:[
                         {
+                            required:true,
                             validator:isNumber,
                             trigger: 'blur'
                         }
                     ],
                     desWsPp:[
                         {
-                            validator:isDigits,
-                            trigger: 'blur'
+                            type:'number',
+                            required:false,
+                            trigger: 'blur',
+                            message:'请输入数字'
                         }
                     ],
-                    sanLicSn: [
-                        {
-                            trigger: 'blur'
-                        }
-                    ],
+                    // sanLicSn: [
+                    //     {
+                    //         trigger: 'blur',
+                    //         message:'卫生许可证编号不能为空'
+                    //     }
+                    // ],
                     adcd: [
                         {
                             required:true,
-                            trigger: 'blur'
+                            trigger: 'blur',
+                            message:'所属分区不能为空'
                         }
                     ],
                     wsReg: [
                         {
-                            trigger: 'blur'
+                            trigger: 'blur',
+                            required:false,
+                            message:'供水范围不能为空'
                         }
                     ],
                     benVilNum:[
                         {
-                            validator:isDigitsAndRange,
-                            trigger: 'blur'
+                            required:false,
+                            trigger: 'blur',
+                            validator:isDigitsAndRange
                         }
                     ],
                     chargForm: [
                         {
                             required:true,
-                            trigger: 'blur'
+                            trigger: 'blur',
+                            message:'收费形式不能为空'
                         }
                     ],
                     runCond: [
                         {
                             required:true,
-                            trigger: 'blur'
+                            trigger: 'blur',
+                            message:'运行状况不能为空'
                         }
                     ],
                     engMan: [
                         {
                             required:true,
-                            trigger: 'blur'
+                            trigger: 'blur',
+                            message:'管理单位不能为空'
+                        }
+                    ],
+                    nt:[
+                        {
+                            required:true,
+                            trigger: 'blur',
+                            max:100,
+                            message:'备注最大字符数不得大于100个'
                         }
                     ]
                 },
@@ -330,9 +350,6 @@
                 that.$refs.form.validate((valid) => {
                     if (valid) {
                         that.saveOrUpWrCwsB_();
-                    } else {
-                        that.$message.error('您输入的内容有误');
-                        return false;
                     }
                 });
             },

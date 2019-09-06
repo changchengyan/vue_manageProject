@@ -36,6 +36,8 @@
  *
  *  ~
  *
+
+ *
  *  4、具体规则完善和处理
  *
  *      处理函数 需要外置，不然数据无法监听和关联
@@ -44,11 +46,17 @@
  *		let vdt = VDATA(val, {
  *			'number':{msg:'请输入正确的数字'}
  *		});
- *		console.log(val);
  *		if (!vdt.result) {
- *			callBack(new Error(vdt.msg));
- *		} else {
- *			callBack();
+ *		 if(rule.required){
+ *		    callBack(new Error(vdt.msg));
+ *		 }else{
+ *		     if(val!=''&&val!=null) {
+ *		         callBack(new Error(vdt.msg));
+ *		     }
+ *		 }
+ *
+ *		}else{
+ *		   callBack();
  *		}
  *	}
  *

@@ -71,7 +71,7 @@
 </template>
 
 <script>
-  import DseTableList from '../../common/components/dseTableList';
+  import DseTableList from '../../common/components/DseTableList';
 
   export default {
     name: 'devWarking',

@@ -166,8 +166,8 @@
 </template>
 
 <script>
-    import DseLoadingAnimation from '../../common/components/dseLoadingAnimation';
-    import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+    import DseLoadingAnimation from '../../common/components/DseLoadingAnimation';
+    import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
 
     import DateFunc from '@/utils/date_func';
     export  default {

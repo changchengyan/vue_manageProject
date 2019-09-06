@@ -205,7 +205,7 @@
 
 <script>
 import countTo from 'vue-count-to';
-import Tab from '../../../common/components/dseTab';
+import Tab from '../../../common/components/DseTab';
 
 import dashboards1 from './data/dashboards1';
 import dashboards2 from './data/dashboards2';

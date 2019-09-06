@@ -18,23 +18,12 @@
 				<el-input v-else v-model="ruleForm[item.name]" :placeholder="item.placeholder" :disabled="item.disabled"></el-input>
 			</el-form-item>
 			<!-- 上传预览图片 -->
-			<el-form-item label="图片" prop="files" style="width: 100%;">
-				<el-upload
-					style="margin-top: 16px;"
-					name="files"
-					list-type="picture-card"
-					multiple
-					:action="upload.action"
-					:with-credentials="true"
-					:data="{ id: 1 }"
-					:auto-upload="false"
-					:on-success="onHandlePictureSuccess"
-					:on-preview="onHandlePictureCardPreview"
-					:on-remove="onHandlePictureCardRemove"
-				>
-					<i class="el-icon-plus"></i>
-				</el-upload>
-			</el-form-item>
+			<dse-upload
+				:fileList="fileList"
+				:files="files"
+				@onHandlePictureSuccess="onHandlePictureSuccess"
+				@onHandlePictureCardRemove="onHandlePictureCardRemove"
+			/>
 			<!-- form 提交按钮 -->
 			<div class="actions">
 				<span class="save" @click="onHandleSubmitForm('ruleForm')">保存</span>
@@ -44,32 +33,17 @@
 				<el-button @click="onHandleCancel">返&nbsp;回</el-button>
 				<el-button type="primary" @click="onHandleSubmitForm('ruleForm')">保&nbsp;存</el-button>
 			</el-form-item> -->
-		</el-form>
-
-		<!-- 上传 -->
-		<el-dialog :visible.sync="upload.visible" size="tiny"><img width="100%" :src="upload.imageUrl" alt="" /></el-dialog>
+		</el-form>		
 	</div>
 </template>
 
 <script>
 // 新增蓄水池
 import { mapGetters } from 'vuex';
+import DseUpload from '../../../../common/components/DseUpload';
 import { systemAction } from '../../../../mixins/system';
 import URLS from '../../../../api/urls';
-import { VDATA } from '../../../../utils/el_validater';
-
-//限制 最大整数
-function isDigitsAndRange(rule, val, callBack) {
-	let vdt = VDATA(val, {
-		digits: { msg: '您输入的不是整数' },
-		range: { param: [0, 999], msg: '请输入小于999的整数!' }
-	});
-	if (!vdt.result) {
-		callBack(new Error(vdt.msg));
-	} else {
-		callBack();
-	}
-}
+import { VDT } from '../../../../utils/el_validater';
 
 export default {
 	props: {
@@ -96,65 +70,42 @@ export default {
 	computed: {
 		...mapGetters(['get_partition'])
 	},
+	components: {
+		DseUpload
+	},
 	data() {
 		return {
 			name: 'systemEngineeringIndex',
 			formList: [],
 			ruleForm: {},
 			rules: {},
-			upload: {
-				action: '/api/upload' || URLS.uploadFiles,
-				imageUrl: '',
-				visible: false
-			},
-			fileList: []
+			// 初始图片列表
+			fileList: [],
+			// 图片 data
+			files: []
 		};
 	},
 	methods: {
+		// 上传图片成功后返回
 		onHandlePictureSuccess(file) {
 			const that = this;
-
-			const { filename = {} } = file;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList.push(path);
+			
+			that.files.push(file);
 		},
-		onHandlePictureCardPreview(file, fileList) {
+		// 上传图片成功后删除
+		onHandlePictureCardRemove(files = []) {
 			const that = this;
 
-			const { url } = file;
-
-			that.upload = {
-				...that.upload,
-				imageUrl: url,
-				visible: true
-			};
-		},
-		onHandlePictureCardRemove(file) {
-			const that = this;
-
-			const { response = {} } = file;
-			const { filename = [] } = response;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList = that.fileList.filter((item = {}) => {
-				if (item === path) return false;
-				return true;
-			});
-
-			that.upload = {
-				...that.upload,
-				imageUrl: '',
-				visible: false
-			};
+			// 删除图片
+			that.files = files;
 		},
 		onHandleSubmitForm(formName) {
 			const that = this;
-			const { ruleForm, fileList } = that;
+			const { ruleForm, files = [] } = that;
 
 			that.$refs[formName].validate(valid => {
 				if (valid) {
-					that.$emit('onHandleSubmit', { ...ruleForm, fileList });
+					that.$emit('onHandleSubmit', { ...ruleForm, files });
 				} else {
 					console.log('error submit!!');
 					return false;
@@ -249,7 +200,9 @@ export default {
 					prcd,
 					runCond,
 					lgtd,
-					compym
+					compym,
+
+					files
 				} = data;
 
 				/*
@@ -306,12 +259,24 @@ export default {
 						item.disabled = false;
 					}
 				});
+
+				// 填充图片
+				if (Array.isArray(files) && files[0]) {
+					that.files = files;
+					that.fileList = that.files.map((item = {}) => ({
+						name: item.fileName,
+						url: window.static_baseUrl + '/' + item.filePath
+					}));
+				}
 			}
 		},
 		// 初始化分区
 		_initPartition() {
+			
 			const that = this;
+			
 			const { cwsCd } = that.data;
+			
 			that.formList.find((item = {}) => {
 				if (item.name === 'cwsCd') {
 					const children = that.get_partition;
@@ -389,22 +354,22 @@ export default {
 					name: 'engMan',
 					label: '管理单位'
 				},
-				{
-					name: 'height',
-					label: '蓄水池高度(m)'
-				},
-				{
-					name: 'width',
-					label: '蓄水池宽度(m)'
-				},
+				// {
+				// 	name: 'height',
+				// 	label: '蓄水池高度(m)'
+				// },
+				// {
+				// 	name: 'width',
+				// 	label: '蓄水池宽度(m)'
+				// },
 				{
 					name: 'volumn',
 					label: '蓄水池容积(m³)'
 				},
-				{
-					name: 'scbg',
-					label: '蓄水池标高(m)'
-				},
+				// {
+				// 	name: 'scbg',
+				// 	label: '蓄水池标高(m)'
+				// },
 				{
 					name: 'sckzsw',
 					label: '蓄水池控制水位(m)'
@@ -438,9 +403,35 @@ export default {
 				poolcd: [{ ...COMMON_RULES_CONFIG, required: true }],
 				poolnm: [{ ...COMMON_RULES_CONFIG, required: true }],
 				b: [COMMON_RULES_CONFIG],
-				lgtd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
+				lgtd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的经度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lgtd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
+				lttd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的纬度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lttd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
 				compYm: [COMMON_RULES_CONFIG],
-				lttd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
 				engMan: [COMMON_RULES_CONFIG],
 				g: [COMMON_RULES_CONFIG],
 				adcd: [{ ...COMMON_RULES_CONFIG, required: true }],
@@ -469,8 +460,8 @@ export default {
 
 					rules[name] = [
 						{
-							...first,
-							message: placeholder
+							message: placeholder,
+							...first
 						},
 						others
 					];
@@ -495,6 +486,7 @@ export default {
 		const that = this;
 
 		that._initialization();
+		// console.warn(222, VDT, 111);
 	}
 };
 </script>

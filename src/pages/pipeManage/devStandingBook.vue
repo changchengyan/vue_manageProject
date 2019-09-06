@@ -83,7 +83,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
+import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
 export default {
 	computed: mapGetters({
 		companyId: 'get_companyId'

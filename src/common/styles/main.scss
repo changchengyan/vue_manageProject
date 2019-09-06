@@ -8,7 +8,7 @@
 
 @mixin table-cell {
 	text-align: center;
-	line-height: 23px;
+	//line-height: 23px;
 	font-size: 12px;
 	padding: 6px 0;
 }
@@ -111,6 +111,7 @@
 	right: initial;
 }
 
+// 通用的 表格样式 默认首行 可点击状态
 .innerTable {
 	border-spacing: 0;
 	width: 100%;
@@ -118,6 +119,7 @@
 	table-layout: fixed;
 	word-break: break-all;
 	word-wrap: break-word;
+	display: table;
 
 	* {
 		box-sizing: border-box;
@@ -126,20 +128,15 @@
 	tr {
 		width: 100%;
 		td {
+			display: table-cell;
 			// border-right: 1px solid rgba(0, 0, 0, 0.17);
 			// border-bottom: 1px solid rgba(0, 0, 0, 0.17);
 			border-right: 1px solid $table-border-color;
 			border-bottom: 1px solid $table-border-color;
 			text-align: center;
 			line-height: 0;
-			color: #8b8b8b;
+			color: #333;
 
-			&:nth-child(odd) {
-				color: #333;
-			}
-			&:nth-child(even) {
-				color: #333;
-			}
 
 			// width: 145px;
 			&:first-child {
@@ -158,6 +155,7 @@
 				@include table-cell;
 			}
 
+
 			& > span {
 				display: inline-block;
 				//width: 100%;
@@ -165,13 +163,21 @@
 				//text-overflow: ellipsis;
 				//white-space: nowrap;
 				font-size: 12px;
-				line-height: 14px;
+				line-height: 26px;
+				//min-height: 40px;
+
+			}
+			&:first-child span{
+				//line-height: 14px;
+				text-decoration: initial;
+				cursor: initial;
+				color: #333;
 			}
 			&.btns {
 				span {
 					width: 40px;
 					// padding: px 0;
-					line-height: 22px;
+					line-height: 35px;
 					//border: 1px solid $base-backgroundColor;
 					//border-radius: 5px;
 					cursor: pointer;
@@ -183,9 +189,32 @@
 				}
 			}
 		}
+		&:nth-child(odd) {
+			td{
+				background: #fff;
+			}
+		}
+		&:nth-child(even) {
+			td{
+				background: #f9f9f9;
+			}
+		}
+
 		&:hover{
 			td{
-				background: #e4e4e4;
+				background: #F2FAFF;
+			}
+		}
+	}
+	// 首行 有下划线
+	&.first-line{
+		tr{
+			td:first-child{
+				span{
+					text-decoration: underline;
+					color: #0b83fe;
+					cursor: pointer;
+				}
 			}
 		}
 	}
@@ -198,6 +227,10 @@
 			@include table-cell;
 
 			border: 1px solid $table-border-color;
+			span{
+				height: 30px;
+				line-height: 28px;
+			}
 		}
 	}
 }
@@ -275,7 +308,7 @@ span.cicle {
 	padding: 0 5px;
 	border: 1px solid $border-color;
 	border-radius: 4px;
-	width: 120px;
+	width: 100px;
 }
 
 // 保存 或者取消的 按钮

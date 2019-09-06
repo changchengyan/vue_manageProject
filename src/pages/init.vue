@@ -11,7 +11,7 @@
 
     import {mapMutations} from 'vuex';
     import {getAreaList} from '../api/interfaces/common_api';
-    import {getWarnList} from '../api/interfaces/dataManage_api';
+    import {getAlarmUrl, getRealTimeWarnList} from '../api/interfaces/oneMap_api';
 
     export default {
         name: 'init',
@@ -100,25 +100,28 @@
             getDictByPCode_proLev() {
 
             },
+            // 获取报警 音频列表前缀
+            getAlarmUrl_(){
+                let that  = this;
+              let result =  new Promise((resolve,reject)=>{
+                  getAlarmUrl({
+                      tm:''
+                  },that).then(res=>{
+                    resolve(res.data.voiceUrl);
+                  });
+              }) ;
+
+              return result;
+            },
             // 报警 列表
             getWarnList_() {
                 let that = this;
                 let result = new Promise((resolve ,reject)=>{
-                    let params = {
-                        keyname: '',
-                        jcType: '',
-                        stm: '',
-                        etm: '',
-                        pageNum: 1,
-                        pageSize: 100
-                    };
-                    getWarnList(params,that).then(res=>{
+                    getRealTimeWarnList({tm:''},that).then(res=>{
                         let {data} = res;
-                        let {list} = data;
-                        list = list && list.length>0?list:[];
+                        data = data && data.length>0?data:[];
                         // that.warnList  = [...list];
-                        that.set_warningList([...list]);
-                        resolve(list);
+                        resolve(data);
                     });
                 });
                 return result;
@@ -142,7 +145,7 @@
                           });
                       });
                       that.set_cityAreas(list);
-                      resolve('');
+                      resolve(list);
                   });
               });
               return result;
@@ -151,7 +154,15 @@
         created() {
             // this.setSession();
             let that = this;
-            Promise.all([that.getAreaList_(),that.getWarnList_()]).then(res=>{
+            Promise.all([that.getAreaList_(),that.getAlarmUrl_(),that.getWarnList_()]).then(res=>{
+                let path = res[1];
+                let list = [...res[2]];
+                list.map(val=>{
+                    val.voiceUrl = path+val.voiceUrl;
+                });
+                console.log(res);
+                that.set_warningList([...list]);
+
                 that.$router.push({
                     path: '/mainContent'
                 });

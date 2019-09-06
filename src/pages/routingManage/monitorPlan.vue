@@ -52,8 +52,8 @@
 </template>
 <script>
 
-    import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
-    import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+    import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
+    import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
     import addOrEditMonitorPlan from './addOrEdit/addOrEditMonitorPlan';//新增或编辑页
 
     export default {

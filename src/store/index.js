@@ -1,4 +1,6 @@
-import Vue from 'vue';
+// import Vue from 'vue';
+import  Vue from  'vue/dist/vue.js';
+
 import Vuex from 'vuex';
 import createLogger from 'vuex/dist/logger';
 

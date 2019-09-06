@@ -124,7 +124,8 @@
             i{
                 cursor: pointer;
                 font-size: 14px;
-
+                display: inline-block;
+                margin-right: 1em;
             }
         }
         .main-content{

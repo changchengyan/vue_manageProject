@@ -29,13 +29,15 @@
           <div class="card-item" v-for="(val,index) in waterfactoryList" :key="index">
             <div class="item-head">
               <div class="col"><img src="../../assets/images/common/legend/waterFactory.png" alt="">
-                <span class="title">{{val.name}}</span></div>
+                <span class="title">{{val.wfctnm}}</span></div>
               <div class="col"><img src="../../assets/images/common/position.png" alt="" @click="whereAmI(val)"></div>
             </div>
             <div class="item-body">
-              <div class="row"><span>供水瞬时流量:</span><span>{{val.flow}}m³/s</span></div>
-              <div class="row"><span>时间:</span><span>{{val.time}}</span></div>
-              <div class="row"><span>今日供水量:</span><span>{{val.supplyWater}}(m³)</span></div>
+              <div class="row"><span>供水流量:</span><span>{{val.q}}m³/s</span></div>
+              <div class="row"><span>时间:</span><span>{{val.tm}}</span></div>
+              <div class="row"><span>今日供水量:</span><span>{{val.totalQ}}(m³)</span></div>
+              <div class="row"><span>泵开关状态:</span><span class="status-cycle" :class="{alert:item=='0'}" v-for="(item,index) in val.pumpList" :key="index">{{index+1}}</span></div>
+              <div class="row" :title="val.jcTypeNm"><span>预警状态:</span><span :class="{alert:val.jcTypeNm!=''}" >{{val.jcTypeNm}}</span></div>
             </div>
           </div>
         </div>
@@ -50,15 +52,15 @@
           <div class="card-item" v-for="(val,index) in pumpSiteList" :key="index">
             <div class="item-head">
               <div class="col"><img src="../../assets/images/common/legend/pump.png" alt="">
-                <span class="title" :title="val.name">{{val.name}}</span></div>
+                <span class="title" :title="val.pumpNm">{{val.pumpNm}}</span></div>
               <div class="col"><img src="../../assets/images/common/position.png" alt="" @click="whereAmI(val)"></div>
             </div>
             <div class="item-body">
-              <div class="row"><span>供水瞬时流量:</span><span>{{val.flow}}m³/s</span></div>
-              <div class="row"><span>时间:</span><span>{{val.flow_time}}</span></div>
-              <div class="row"><span>出水压力:</span><span>{{val.press}}(MPa)</span></div>
-              <div class="row"><span>时间:</span><span>{{val.press_time}}</span></div>
-              <div class="row"><span>状态:</span><span :class="{alert:val.status}">{{val.status?val.msg:'正常'}}</span></div>
+              <div class="row"><span>供水瞬时流量:</span><span>{{val.q}}m³/s</span></div>
+              <div class="row"><span>时间:</span><span>{{val.qtm}}</span></div>
+              <div class="row"><span>出水压力:</span><span>{{val.wgage}}(MPa)</span></div>
+              <div class="row"><span>时间:</span><span>{{val.wtm}}</span></div>
+              <div class="row" :title="val.jcTypeNm"><span>状态:</span><span :class="{alert:val.jcTypeNm!=''}">{{val.jcTypeNm}}</span></div>
             </div>
           </div>
         </div>
@@ -117,8 +119,9 @@
 <script>
   import {mapGetters} from 'vuex';
 
-  import DseMyPagination from '../../common/components/dseMyPagination';
-  import DseTableList from '../../common/components/dseTableList';
+  import DseMyPagination from '../../common/components/DseMyPagination';
+  import DseTableList from '../../common/components/DseTableList';
+  import {getBzgcxx, getScgcxx} from "../../api/interfaces/oneMap_api";
 
   export default {
     name: 'projectMsg',
@@ -169,72 +172,7 @@
           }
         ], //水库列表
         waterfactoryName: '', //水厂名字
-        waterfactoryList: [
-          {
-            layerID:'shuichang',
-            eleId:'SC001',
-            name: '窑山扩建水厂',
-            flow: 1.05,
-            time: '2019-8-5 8:30',
-            supplyWater: 16000
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC002',
-            name: '东部净水厂',
-            flow: 1.14,
-            time: '2019-8-5 8:30',
-            supplyWater: 6800
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC003',
-            name: '麻疙瘩、合合山净水厂',
-            flow: 0.87,
-            time: '2019-8-5 8:30',
-            supplyWater: 2000
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC004',
-            name: '王团扩建水厂',
-            flow: 0.57,
-            time: '2019-8-5 8:30',
-            supplyWater: 2400
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC005',
-            name: '马家洼子净水厂',
-            flow: 0.56,
-            time: '2019-8-5 8:30',
-            supplyWater: 2000
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC006',
-            name: '小洪沟水厂',
-            flow: 0.58,
-            time: '2019-8-5 8:30',
-            supplyWater: 2400
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC007',
-            name: '海源污水处理厂',
-            flow: 0.58,
-            time: '2019-8-5 8:30',
-            supplyWater: 2400
-          },
-          {
-            layerID:'shuichang',
-            eleId:'SC008',
-            name: '水厂',
-            flow: 0.58,
-            time: '2019-8-5 8:30',
-            supplyWater: 2400
-          }
-        ], //水厂列表
+        waterfactoryList: [], //水厂列表
         bgUserName: '', //
         poolList: [
           {
@@ -371,150 +309,7 @@
           }
         ], //蓄水池列表
         pumpSiteName: '', //泵站名字
-        pumpSiteList: [
-          {
-            layerID:'bengzhan',
-            eleId:'BZ003',
-            name: '河东加压泵站',
-            flow: 0.45,
-            flow_time: '2019-8-5 8:30',
-            press: 0.5,
-            press_time: '2019-8-5 8:30',
-            status: true,
-            msg:'开关机超时,中等预警'
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ005',
-            name: '丁塘加压泵站',
-            flow: 0.23,
-            flow_time: '2019-8-5 8:30',
-            press: 0.8,
-            press_time: '2019-8-5 8:30',
-            status: true,
-            msg:'开关机超时,中等预警'
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ001',
-            name: '二泵站（小洪沟泵站）',
-            flow: 0.54,
-            flow_time: '2019-8-5 8:30',
-            press: 1,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ002',
-            name: '小洪沟水源泵站',
-            flow: 0.63,
-            flow_time: '2019-8-5 8:30',
-            press: 1.2,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ004',
-            name: '河西二级加压泵站',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ011',
-            name: '人饮三泵站',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ012',
-            name: '韦州镇外来水源泵站',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ013',
-            name: '张家塬外来水源泵站',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ014',
-            name: '旱天岭1#高位水池泵站（二级加压泵站）',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ015',
-            name: '2#高位水池泵站（三级加压泵站）',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ016',
-            name: '窑山提水泵站',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ017',
-            name: '窑山1#高位水池泵站（二级加压泵站）',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ018',
-            name: '窑山2#高位水池泵站（三级加压泵站）',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          },
-          {
-            layerID:'bengzhan',
-            eleId:'BZ019',
-            name: '麻疙瘩、合合山提水泵站',
-            flow: 0.34,
-            flow_time: '2019-8-5 8:30',
-            press: 0.4,
-            press_time: '2019-8-5 8:30',
-            status: false
-          }
-        ], //泵站列表
+        pumpSiteList: [], //泵站列表
         flowmetersName: '', //联户表井
         userDevList: [
           {
@@ -571,6 +366,28 @@
 
       thisPage(num){
 
+        let that = this;
+
+        let temp_tabIndex = this.tabIndex;
+        switch (temp_tabIndex) {
+          case 0:
+            that.getRsvrWqInfo_(num);
+            break;
+          case 1:
+            that.getWaterworksInfo_(num);
+            break;
+          case 2:
+            that.getUserWList_(num);
+            break;
+          case 3:
+            that.getPumpList_(num);
+            break;
+          case 4:
+            that.getMeterHouseList_(num);
+            break;
+        }
+
+
       },
       fromFather(component, list, flag) {
         let that = this;
@@ -589,54 +406,153 @@
         switch (temp_item) {
           case  '水库':
             this.tabIndex = 0;
-            that.getRsvrWqInfo_();
+            that.getRsvrWqInfo_(1);
             break;
           case  '水厂':
             this.tabIndex = 1;
-            that.getWaterworksInfo_();
+            that.getWaterworksInfo_(1);
             break;
           case  '泵站':
             this.tabIndex = 2;
-            that.getUserWList_();
+            that.getPumpList_(1);
             break;
           case  '蓄水池':
             this.tabIndex = 3;
-            that.getPumpList_();
+            that.getUserWList_(1);
             break;
           case  '联户表井':
             this.tabIndex = 4;
-            that.getMeterHouseList_();
+            that.getMeterHouseList_(1);
             break;
         }
       },
       // 获取 水库列表
-      getRsvrWqInfo_() {
+      getRsvrWqInfo_(num=1) {
+
+
+
+        //let that = this;
+        // that.totalPage = 1;
+        // that.currentPage = num;
+        // let list = [];
+
+        // 列表 必须 包含 如下三个字段
+        // list.map(val=>{
+        //   val.name = val.n;
+        //   val.eleId = val.code;
+        //   val.layerID = 'shuiku'
+        // });
+        // that.reservoirList = [...list];
+
 
       },
       // 获取 水厂 列表
-      getWaterworksInfo_() {
+      getWaterworksInfo_(num=1) {
+
+        let that = this;
+        getScgcxx({
+          'adcd': '',
+          'keyname': '',
+          'pageNum':''+num,
+          'pageSize': '12'
+        },that).then(res=>{
+          let {data} = res;
+          let {list=[],total=1} = data;
+          list = list&&list.length>0?list:[];
+
+          that.currentPage = num;
+          that.totalPage = total?Math.ceil(parseInt(total)/12):1;
+
+          // 列表 必须 包含 如下三个字段
+          list.map(val=>{
+            val.name = val.wfctnm;
+            val.eleId = val.wfctCd;
+            val.layerID = 'shuichang';
+            val.pumpList = val.bzstate?val.bzstate.split(','):[];
+          });
+          that.waterfactoryList = [...list];
+        });
 
       },
       // 获取 蓄水池列表
-      getUserWList_() {
+      getUserWList_(num=1) {
+
+        // let that = this;
+        // that.totalPage = 1;
+        // that.currentPage = num;
+        // let list = [];
+
+        // 列表 必须 包含 如下三个字段
+        // list.map(val=>{
+        //   val.name = val.n;
+        //   val.eleId = val.code;
+        //   val.layerID = 'xushuichi'
+        // });
+        // that.poolList = [...list];
+
 
       },
       // 获取 泵站列表
-      getPumpList_() {
+      getPumpList_(num=1) {
 
-
+        let that = this;
+        getBzgcxx({
+          adcd:'',
+          keyname:'',
+          pageNum:num,
+          pageSize:'12'
+        },that).then(res=>{
+          let {data} = res;
+          let {list=[],total=1} = data;
+          that.totalPage = total?Math.ceil(total/12):1;
+          that.currentPage = num;
+          list =list&&list.length>0?list:[];
+          // 列表 必须 包含 如下三个字段
+          list.map(val=>{
+            val.name = val.pumpNm;
+            val.eleId = val.pumpCd;
+            val.layerID = 'bengzhan'
+          });
+          that.pumpSiteList = [...list];
+        })
 
       },
       // 获取 联户表井的 列表
-      getMeterHouseList_() {
+      getMeterHouseList_(num=1) {
 
+        //let that = this;
+        // that.totalPage = 1;
+        // that.currentPage = num;
+        // let list = [];
+
+        // 列表 必须 包含 如下三个字段
+        // list.map(val=>{
+        //   val.name = val.n;
+        //   val.eleId = val.code;
+        //   val.layerID = 'dayongshuihu'
+        // });
+        // that.userDevList = [...list];
 
       },
       // gis上查找 该要素
       whereAmI(val) {
-        console.log(val);
+
+        /**
+         *
+         *  参数中必须 构造 含有 这样
+         *
+         *  {
+         *      name:'', //站点的 名字
+         *      eleId:'', //当前的 站点的业务ID
+         *      layerID:''， // 所属图层的 ID
+         *  }
+         *
+         */
+
+
         this.$emit('IamHere', val);
-      }
+      },
+
     },
     filters:{
       formate_status(val){
@@ -761,11 +677,32 @@
               height: 30px;
               line-height: 30px;
               color: #8B8B8B;
+              display: flex;
               span {
                 display: inline-block;
                 letter-spacing: 2px;
+
+                &.status-cycle{
+                 background: green;
+                  border-radius: 12px;
+                  display: inline-block;
+                  width: 20px;
+                  height: 20px;
+                  line-height: 20px;
+                  text-align: center;
+                  color: #fff;
+                  margin-right: 10px;
+                  &.alert{
+                    background: red;
+                    color: #fff;
+                  }
+                }
                 &.alert{
                   color: red;
+                  width: calc(100% - 119px);
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  white-space: nowrap;
                 }
               }
             }
@@ -784,28 +721,6 @@
       text-decoration: underline;
       color: blue;
       cursor: pointer;
-    }
-
-    table{
-      span.alert{
-        color: red;
-      }
-      tbody{
-        tr{
-          td:first-child{
-            span{
-              text-decoration: underline;
-              color: #0b83fe;
-              cursor: pointer;
-            }
-          }
-          td:last-child{
-            span{
-              line-height: 25px;
-            }
-          }
-        }
-      }
     }
 
   }

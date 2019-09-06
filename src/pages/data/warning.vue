@@ -14,8 +14,13 @@
 							</el-select>
 						</el-form-item>
 						<el-form-item label="监测类型:">
-							<el-select v-model="searchData.siteType" placeholder="请选择监测类型" @keyup.enter.native="onHandleSearch(1)">
+							<el-select v-model="searchData.siteType" placeholder="请选择监测类型" @keyup.enter.native="onHandleSearch(1)" @change="onHandleSearch(1)" >
 								<el-option v-for="item in siteTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item label="报警类别:">
+							<el-select v-model="searchData.warnType" placeholder="请选择报警类别" @keyup.enter.native="onHandleSearch(1)" @change="onHandleSearch(1)">
+								<el-option v-for="item in warnTypeList" :key="item.value" :label="item.label" :value="item.value"></el-option>
 							</el-select>
 						</el-form-item>
 						<el-form-item label="报警时间:">
@@ -90,7 +95,7 @@
 </template>
 
 <script>
-import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
+import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
 // import dseNormalModel from '../../common/components/toast/dseNormalModel';
 // eslint-disable-next-line standard/object-curly-even-spacing
 import { getWarnList,getGcglList } from '../../api/interfaces/dataManage_api';
@@ -106,6 +111,7 @@ export default {
 				pageSize: 10,
 				keywords: '',
 				siteType: '',
+				warnType:'',
 				prcode:'',
 				date: ''
 			},
@@ -140,7 +146,38 @@ export default {
 				}
 			],
 			prtypeList:[],
-			warnList: []
+			warnList: [],
+			// 报警类别：1，电器类 2，机械类 3，监测类 4，通讯类 5 其他
+			warnTypeList:[
+				{
+					label: '全部点位',
+					value: ''
+				},
+				{
+					label: '电器类',
+					value: '1'
+				},
+				{
+					label: '机械类',
+					value: '2'
+				},
+				{
+					label: '监测类',
+					value: '3'
+				},
+				{
+					label: '通讯类',
+					value: '4'
+				},
+				{
+					label: '其他',
+					value: '5'
+				},
+				{
+					label: '余氯',
+					value: '7'
+				}
+			]
 		};
 	},
 	methods: {
@@ -208,6 +245,7 @@ export default {
 				etm: this.searchData.date[1],
 				// stm: '',
 				// etm: '',
+				warntype:this.searchData.warnType,
 				prcode:this.searchData.prcode,
 				pageNum: num,
 				pageSize: that.searchData.pageSize
@@ -279,6 +317,18 @@ export default {
 		display: flex;
 		flex-direction: column;
 		min-height: 100%;
+		tbody{
+			tr{
+				td:first-child{
+					span{
+						text-decoration: initial;
+						cursor: initial;
+						color: #333;
+					}
+
+				}
+			}
+		}
 	}
 
 	/deep/ .el-table th {

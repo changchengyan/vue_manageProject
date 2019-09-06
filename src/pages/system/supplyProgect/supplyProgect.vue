@@ -85,8 +85,8 @@
 </template>
 
 <script>
-import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
-import DseTableWidthPagination from '../../../common/components/dseTableWidthPagination';
+import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
+import DseTableWidthPagination from '../../../common/components/DseTableWidthPagination';
 import { getWrCwsBList, updWrCwsUseStatus } from '../../../api/interfaces/system_api';
 export default {
 	name: 'supplyProject',
@@ -250,6 +250,19 @@ export default {
 	.globalTable {
 		width: 100%;
 		height: calc(100% - 60px);
+
+		tbody{
+			tr{
+				td:first-child{
+					span{
+						text-decoration: initial;
+						cursor: initial;
+						color: #333;
+					}
+
+				}
+			}
+		}
 	}
 }
 #supplyProject {

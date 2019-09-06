@@ -107,7 +107,7 @@
 </template>
 
 <script>
-import dseNormalModel from '../../../common/components/toast/dseNormalModel';
+import dseNormalModel from '../../../common/components/toast/DseNormalModel';
 import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
 import modelExportList from './data/modelExportList';
 import modelImportList from './data/modelImportList';

@@ -56,7 +56,7 @@
     </div>
 </template>
 <script>
-    import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
+    import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
     // import MonitorRecordDetail from './detail/monitorRecordDetail';
 
 

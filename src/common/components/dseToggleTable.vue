@@ -25,8 +25,8 @@
         // props:['innerWidth'],
         props:{
             innerWidth:{
-                type:String,
-                defaultProps:'300'
+                type:Number,
+                defaultProps:300
             }
         },
         name:'dse-toggleTable',

@@ -28,7 +28,7 @@
 <script>
 import { mapGetters } from 'vuex';
 // import DseTableWidthPagination from '../../../common/components/dseTableWidthPagination';
-import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
+import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
 
 // import {
 // 查询巡检班组列表

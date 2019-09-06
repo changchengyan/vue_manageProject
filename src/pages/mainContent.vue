@@ -11,7 +11,7 @@
 	} from 'vuex';
 
 	// import DseMenu from '../common/components/dseMenu';
-	import DseHeaderInner from '../common/components/dseHeaderInner';
+	import DseHeaderInner from '../common/components/DseHeaderInner';
 
 	export default {
 		name: 'mainWidthMenu',
@@ -92,14 +92,6 @@
 			}
 
 			this.MenuData = this.menuList;
-		},
-		watch: {
-			'$route'(to, from) {
-				const toIndex = to.meta.index;
-				const fromIndex = from.meta.index;
-
-				this.transitionName = toIndex < fromIndex ? 'slide-right' : 'slide-left';
-			}
 		}
 	};
 </script>

@@ -224,8 +224,8 @@
     import * as esriLoader from 'esri-loader';
 
     import DseSelectTips from '../../common/components/DseselectTips';
-    import DseToggleTable from '../../common/components/dseToggleTable';
-    import DseTableList from '../../common/components/dseTableList';
+    import DseToggleTable from '../../common/components/DseToggleTable';
+    import DseTableList from '../../common/components/DseTableList';
 
     esriLoader.loadCss(window.DSE.arcgis_mainCss);
     let startJs = window.DSE.arcgis_startJS;

@@ -22,22 +22,12 @@
 				<el-input v-else v-model="ruleForm[item.name]" :placeholder="item.placeholder" :disabled="item.disabled"></el-input>
 			</el-form-item>
 			<!-- 上传预览图片 -->
-			<el-form-item label="图片" prop="files" style="width: 100%;">
-				<el-upload
-					style="margin-top: 16px;"
-					name="files"
-					list-type="picture-card"
-					multiple
-					:action="upload.action"
-					:with-credentials="true"
-					:data="{ id: 1 }"
-					:on-success="onHandlePictureSuccess"
-					:on-preview="onHandlePictureCardPreview"
-					:on-remove="onHandlePictureCardRemove"
-				>
-					<i class="el-icon-plus"></i>
-				</el-upload>
-			</el-form-item>
+			<dse-upload
+				:fileList="fileList"
+				:files="files"
+				@onHandlePictureSuccess="onHandlePictureSuccess"
+				@onHandlePictureCardRemove="onHandlePictureCardRemove"
+			/>
 			<!-- form 提交按钮 -->
 			<div class="actions">
 				<span class="save" @click="onHandleSubmitForm('ruleForm')">保存</span>
@@ -48,31 +38,16 @@
 				<el-button type="primary" @click="onHandleSubmitForm('ruleForm')">保&nbsp;存</el-button>
 			</el-form-item> -->
 		</el-form>
-
-		<!-- 上传 -->
-		<el-dialog :visible.sync="upload.visible" size="tiny"><img width="100%" :src="upload.imageUrl" alt="" /></el-dialog>
 	</div>
 </template>
 
 <script>
 // 新增修改水库
 import { mapGetters } from 'vuex';
+import DseUpload from '../../../../common/components/DseUpload';
 import { systemAction } from '../../../../mixins/system';
-import { uploadFiles } from '../../../../api/urls';
-import { VDATA } from '../../../../utils/el_validater';
-
-// 限制 最大整数
-function isDigitsAndRange(rule, val, callBack) {
-	let vdt = VDATA(val, {
-		digits: { msg: '您输入的不是整数' },
-		range: { param: [0, 999], msg: '请输入小于999的整数!' }
-	});
-	if (!vdt.result) {
-		callBack(new Error(vdt.msg));
-	} else {
-		callBack();
-	}
-}
+import URLS from '../../../../api/urls';
+import { VDT } from '../../../../utils/el_validater';
 
 export default {
 	props: {
@@ -99,28 +74,32 @@ export default {
 	computed: {
 		...mapGetters(['get_partition'])
 	},
+	components: {
+		DseUpload
+	},
 	data() {
 		return {
 			name: 'systemEngineeringIndex',
 			formList: [],
 			ruleForm: {},
 			rules: {},
-			upload: {
-				action: '/api/upload' || uploadFiles,
-				imageUrl: '',
-				visible: false
-			}
+			fileList: [],
+			files: []
 		};
 	},
 	methods: {
 		// 上传图片成功后返回
 		onHandlePictureSuccess(file) {
 			const that = this;
-
-			const { filename = {} } = file;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList.push(path);
+			
+			that.files.push(file);
+		},
+		// 上传图片成功后删除
+		onHandlePictureCardRemove(files = []) {
+			const that = this;
+		
+			// 删除图片
+			that.files = files;
 		},
 		dateChange(val) {
 			const that = this;
@@ -128,45 +107,14 @@ export default {
 			that.compYm = val;
 			console.info('===============', val);
 		},
-		// 上传图片成功后预览
-		onHandlePictureCardPreview(file, fileList) {
-			const that = this;
-
-			const { url } = file;
-
-			that.upload = {
-				...that.upload,
-				imageUrl: url,
-				visible: true
-			};
-		},
-		// 上传图片成功后删除
-		onHandlePictureCardRemove(file) {
-			const that = this;
-
-			const { response = {} } = file;
-			const { filename = [] } = response;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList = that.fileList.filter((item = {}) => {
-				if (item === path) return false;
-				return true;
-			});
-
-			that.upload = {
-				...that.upload,
-				imageUrl: '',
-				visible: false
-			};
-		},
 		// 表单提交
 		onHandleSubmitForm(formName) {
 			const that = this;
 
-			const { ruleForm, fileList } = that;
+			const { ruleForm, files = [] } = that;
 			that.$refs[formName].validate(valid => {
 				if (valid) {
-					that.$emit('onHandleSubmit', { ...ruleForm, ...fileList });
+					that.$emit('onHandleSubmit', { ...ruleForm, files });
 				} else {
 					return false;
 				}
@@ -270,7 +218,9 @@ export default {
 					runCond,
 					wsReg,
 					lgtd,
-					compym
+					compym,
+					
+					files
 				} = data;
 
 				/*
@@ -351,11 +301,22 @@ export default {
 						return true;
 					}
 				});
+				
+				// 填充图片
+				if (Array.isArray(files) && files[0]) {
+					that.files = files;
+					that.fileList = that.files.map((item = {}) => ({
+						name: item.fileName,
+						url: window.static_baseUrl + '/' + item.filePath
+					}));
+				}
 			}
 		},
 		// 初始化分区
 		_initPartition() {
+			
 			const that = this;
+			
 			const { cwsCd } = that.data;
 
 			that.formList.find((item = {}) => {
@@ -476,8 +437,8 @@ export default {
 				{
 					name: 'wsReg',
 					label: '供水范围',
-					type: 4,
-				},
+					type: 4
+				}
 				/*{
 					name: 'p',
 					label: '坝长(m)'
@@ -500,8 +461,34 @@ export default {
 			const rules = {
 				resCd: [{ ...COMMON_RULES_CONFIG, required: true }],
 				resNm: [{ ...COMMON_RULES_CONFIG, required: true }],
-				lgtd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
-				lttd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
+				lgtd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的经度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lgtd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
+				lttd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的纬度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lttd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
 				totV: [{ ...COMMON_RULES_CONFIG }],
 				frscV: [{ ...COMMON_RULES_CONFIG }],
 				deadV: [COMMON_RULES_CONFIG],
@@ -514,13 +501,15 @@ export default {
 				engMan: [COMMON_RULES_CONFIG],
 				n: [COMMON_RULES_CONFIG],
 				loc: [COMMON_RULES_CONFIG],
-				wsReg: [{ ...COMMON_RULES_CONFIG },
+				wsReg: [
+					{ ...COMMON_RULES_CONFIG },
 					{
 						min: 0,
 						max: 100,
 						message: '不能超过100个字符',
 						trigger: 'blur'
-					},],
+					}
+				],
 				adcd: [{ ...COMMON_RULES_CONFIG, required: true }]
 			};
 

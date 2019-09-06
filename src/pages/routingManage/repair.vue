@@ -91,7 +91,7 @@
 
 <script>
     import DseSelectTips from '../../common/components/DseselectTips';
-    import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
+    import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
 
 
     export default {

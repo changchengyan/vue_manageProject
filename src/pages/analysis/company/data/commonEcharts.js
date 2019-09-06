@@ -11,7 +11,7 @@ const title = {
 	}
 };
 
-module.exports = {
+export default{
 	ArticleBarParams1: {
 		title,
 		color: ['#28ab75', '#1b84ea', '#22cdab', '#f5a72b'],

@@ -10,20 +10,20 @@
         </thead>
         <tbody>
         <tr>
-          <td><span>设计规模(万方/天)</span></td>
-          <td><span>{{baseInfo.scale}}</span></td>
+          <td><span>设计规模(万m³/天)</span></td>
+          <td><span>{{baseInfo.projScal}}</span></td>
         </tr>
         <tr>
           <td><span>扬程(m)</span></td>
-          <td><span>{{baseInfo.height}}</span></td>
+          <td><span>{{baseInfo.desHead}}</span></td>
         </tr>
         <tr>
           <td><span>装机容量(KW)</span></td>
-          <td><span>{{baseInfo.capacity}}</span></td>
+          <td><span>{{baseInfo.allEquWw}}</span></td>
         </tr>
         <tr>
           <td><span>运行方式</span></td>
-          <td><span>{{baseInfo.oModel}}</span></td>
+          <td><span>{{baseInfo.runCond}}</span></td>
         </tr>
         </tbody>
       </table>
@@ -45,30 +45,46 @@
 
 <script>
 
+  import {getWrPumpB} from '../../../api/interfaces/oneMap_api';
+
   export default {
     name: 'baseMsg',
-    props: ['pumpId'],
+    props:{
+      pumpId:{
+        type:String,
+        defaultProps:''
+      }
+    },
     data() {
       return {
           baseInfo:{
-            scale:'12000',
-            height:'12',
-            capacity:'120',
-            oModel:'三备一用'
+            projScal:'',
+            desHead:'',
+            allEquWw:'',
+            runCond:''
           },
           imgUrls:[],
          staticPathUrl:''
       };
     },
     methods:{
+      // 获取泵站 基本信息
       getPumpAttrInfo_(){
-
-
+        let  that  = this;
+        getWrPumpB({
+          pumpCd:that.pumpId
+        },that).then(res=>{
+          let {data} = res;
+            that.baseInfo = {
+              ...that.baseInfo,
+              ...data
+            }
+        });
       }
     },
     created() {
-      this.getPumpAttrInfo_();
       this.staticPathUrl = this.$store.getters.staticPathUrl;
+      this.getPumpAttrInfo_();
     }
   };
 </script>

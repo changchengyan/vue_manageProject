@@ -1,7 +1,7 @@
 <template>
     <div id="table">
         <div class="table-wrap">
-            <table  class="innerTable">
+            <table  class="innerTable first-line">
                 <slot></slot>
             </table>
         </div>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    import DseMyPagination from './dseMyPagination';
+    import DseMyPagination from './DseMyPagination';
     export default {
         name:'dse-tableList',
         components: {DseMyPagination},

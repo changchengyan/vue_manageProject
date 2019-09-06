@@ -83,8 +83,8 @@
 </template>
 
 <script>
-	import Tab from '../../../common/components/dseTab';
-	import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
+	import Tab from '../../../common/components/DseTab';
+	import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
 
 	window.tabIndex = 0;
 

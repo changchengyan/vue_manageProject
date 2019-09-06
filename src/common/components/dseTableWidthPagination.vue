@@ -63,11 +63,8 @@
             }
         },
         watch:{
-            currentPage:{
-                handler:(newVal,oldVal)=>{
-                    this.currentPage_ = newVal;
-                },
-                immediate:true
+            currentPage(val) {
+                this.currentPage_ = val;
             }
         }
     };

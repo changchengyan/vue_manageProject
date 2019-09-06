@@ -22,10 +22,10 @@
 							<th><span>所在地</span></th>
 							<th><span>测点项类型</span></th>
 							<th><span>仪表编号</span></th>
-							<th><span>测点纬度</span></th>
-							<th><span>测点经度</span></th>
+							<th><span>纬度</span></th>
+							<th><span>经度</span></th>
 							<th><span>状态</span></th>
-							<th><span>数据标识</span></th>
+							<!--<th><span>数据标识</span></th>-->
 							<!--<th><span>配置时间</span></th>-->
 							<th><span>操作</span></th>
 						</tr>
@@ -42,7 +42,7 @@
 								<td><span>{{item.lgtd}}</span></td>
 								<td><span>{{item.lttd}}</span></td>
 								<td><span>{{item.usfl|formate_status}}</span></td>
-								<td><span>{{item.dataCode}}</span></td>
+								<!--<td><span>{{item.dataCode}}</span></td>-->
 								<!--<td><span>{{item.label}}</span></td>-->
 								<td class="btns">
 									<span @click="onHandleListEdit(item)">编辑</span>
@@ -52,7 +52,7 @@
 						</template>
 						<template v-else>
 							<tr>
-								<td colspan="12"><span style="line-height: 30px">暂时没有数据~~</span></td>
+								<td colspan="11"><span style="line-height: 30px">暂时没有数据~~</span></td>
 							</tr>
 						</template>
 						</tbody>
@@ -82,7 +82,7 @@
 							<th><span>测点纬度</span></th>
 							<th><span>测点经度</span></th>
 							<th><span>状态</span></th>
-							<th><span>数据标识</span></th>
+							<!--<th><span>数据标识</span></th>-->
 							<!--<th><span>配置时间</span></th>-->
 							<th><span>操作</span></th>
 						</tr>
@@ -99,7 +99,7 @@
 								<td><span>{{item.lgtd}}</span></td>
 								<td><span>{{item.lttd}}</span></td>
 								<td><span>{{item.usfl|formate_status}}</span></td>
-								<td><span>{{item.dataCode}}</span></td>
+								<!--<td><span>{{item.dataCode}}</span></td>-->
 								<!--<td><span>{{item.label}}</span></td>-->
 								<td class="btns">
 									<span @click="onHandleListEdit(item)">编辑</span>
@@ -109,7 +109,7 @@
 						</template>
 						<template v-else>
 							<tr>
-								<td colspan="12"><span style="line-height: 30px">暂时没有数据~~</span></td>
+								<td colspan="11"><span style="line-height: 30px">暂时没有数据~~</span></td>
 							</tr>
 						</template>
 						</tbody>
@@ -139,7 +139,7 @@
 							<th><span>测点纬度</span></th>
 							<th><span>测点经度</span></th>
 							<th><span>状态</span></th>
-							<th><span>数据标识</span></th>
+							<!--<th><span>数据标识</span></th>-->
 							<!--<th><span>配置时间</span></th>-->
 							<th><span>操作</span></th>
 						</tr>
@@ -156,7 +156,7 @@
 								<td><span>{{item.lgtd}}</span></td>
 								<td><span>{{item.lttd}}</span></td>
 								<td><span>{{item.usfl|formate_status}}</span></td>
-								<td><span>{{item.dataCode}}</span></td>
+								<!--<td><span>{{item.dataCode}}</span></td>-->
 								<!--<td><span>{{item.label}}</span></td>-->
 								<td class="btns">
 									<span @click="onHandleListEdit(item)">编辑</span>
@@ -166,7 +166,7 @@
 						</template>
 						<template v-else>
 							<tr>
-								<td colspan="12"><span style="line-height: 30px">暂时没有数据~~</span></td>
+								<td colspan="11"><span style="line-height: 30px">暂时没有数据~~</span></td>
 							</tr>
 						</template>
 						</tbody>
@@ -196,7 +196,7 @@
 							<th><span>测点纬度</span></th>
 							<th><span>测点经度</span></th>
 							<th><span>状态</span></th>
-							<th><span>数据标识</span></th>
+							<!--<th><span>数据标识</span></th>-->
 							<!--<th><span>配置时间</span></th>-->
 							<th><span>操作</span></th>
 						</tr>
@@ -213,7 +213,7 @@
 								<td><span>{{item.lgtd}}</span></td>
 								<td><span>{{item.lttd}}</span></td>
 								<td><span>{{item.usfl|formate_status}}</span></td>
-								<td><span>{{item.dataCode}}</span></td>
+								<!--<td><span>{{item.dataCode}}</span></td>-->
 								<!--<td><span>{{item.label}}</span></td>-->
 								<td class="btns">
 									<span @click="onHandleListEdit(item)">编辑</span>
@@ -223,7 +223,7 @@
 						</template>
 						<template v-else>
 							<tr>
-								<td colspan="12"><span style="line-height: 30px">暂时没有数据~~</span></td>
+								<td colspan="11"><span style="line-height: 30px">暂时没有数据~~</span></td>
 							</tr>
 						</template>
 						</tbody>
@@ -253,7 +253,7 @@
 							<th><span>测点纬度</span></th>
 							<th><span>测点经度</span></th>
 							<th><span>状态</span></th>
-							<th><span>数据标识</span></th>
+							<!--<th><span>数据标识</span></th>-->
 							<!--<th><span>配置时间</span></th>-->
 							<th><span>操作</span></th>
 						</tr>
@@ -270,7 +270,7 @@
 								<td><span>{{item.lgtd}}</span></td>
 								<td><span>{{item.lttd}}</span></td>
 								<td><span>{{item.usfl|formate_status}}</span></td>
-								<td><span>{{item.dataCode}}</span></td>
+								<!--<td><span>{{item.dataCode}}</span></td>-->
 								<!--<td><span>{{item.label}}</span></td>-->
 								<td class="btns">
 									<span @click="onHandleListEdit(item)">编辑</span>
@@ -280,7 +280,7 @@
 						</template>
 						<template v-else>
 							<tr>
-								<td colspan="12"><span style="line-height: 30px">暂时没有数据~~</span></td>
+								<td colspan="11"><span style="line-height: 30px">暂时没有数据~~</span></td>
 							</tr>
 						</template>
 						</tbody>
@@ -310,7 +310,7 @@
 							<th><span>测点纬度</span></th>
 							<th><span>测点经度</span></th>
 							<th><span>状态</span></th>
-							<th><span>数据标识</span></th>
+							<!--<th><span>数据标识</span></th>-->
 							<!--<th><span>配置时间</span></th>-->
 							<th><span>操作</span></th>
 						</tr>
@@ -327,7 +327,7 @@
 								<td><span>{{item.lgtd}}</span></td>
 								<td><span>{{item.lttd}}</span></td>
 								<td><span>{{item.usfl|formate_status}}</span></td>
-								<td><span>{{item.dataCode}}</span></td>
+								<!--<td><span>{{item.dataCode}}</span></td>-->
 								<!--<td><span>{{item.label}}</span></td>-->
 								<td class="btns">
 									<span @click="onHandleListEdit(item)">编辑</span>
@@ -337,7 +337,7 @@
 						</template>
 						<template v-else>
 							<tr>
-								<td colspan="12"><span style="line-height: 30px">暂时没有数据~~</span></td>
+								<td colspan="11"><span style="line-height: 30px">暂时没有数据~~</span></td>
 							</tr>
 						</template>
 						</tbody>
@@ -358,9 +358,9 @@
         // 系统配置-监测点配置-删除监测点基本信息
         // destoryStJcdB
     } from '../../../api/interfaces/system_api';
-    import DseTab from '../../../common/components/dseTab';
+    import DseTab from '../../../common/components/DseTab';
     import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
-    import DseTableWidthPagination from '../../../common/components/dseTableWidthPagination';
+    import DseTableWidthPagination from '../../../common/components/DseTableWidthPagination';
 
     const PAGINATION = {
         total: 10,
@@ -463,7 +463,16 @@
                     vtm2: null,
                     vtm3: null,
                     disable:false,
-                    stWarnBList:[]
+                    stWarnBList:[
+						{
+							bjftype: '',
+							sblxsz: '',
+							tbjx: '',
+							vtx: '00:24',
+							vmin: null,
+							vmax: null
+						}
+					]
                 };
                 switch (tabIndex) {
                     case 0:
@@ -720,8 +729,6 @@
         created() {
             let that  = this;
             this.tabIndex = parseInt(that.$store.getters.get_sys_monitor_tabIndex) ;
-            console.log(this.tabIndex);
-            console.log( typeof this.tabIndex);
         }
     };
 </script>
@@ -730,6 +737,18 @@
 	.card{
 		width: 100%;
 		height: 100%;
+		tbody{
+			tr{
+				td:first-child{
+					span{
+						text-decoration: initial;
+						cursor: initial;
+						color: #333;
+					}
+
+				}
+			}
+		}
 	}
 
 </style>

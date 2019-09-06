@@ -82,7 +82,7 @@
 </template>
 
 <script>
-    import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
+    import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
     import {VDATA} from '../../../utils/el_validater';
 
 

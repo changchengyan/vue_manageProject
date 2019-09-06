@@ -376,7 +376,7 @@
 
 <script>
 
-import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
 export default {
   name:'standardForm',
   components: {

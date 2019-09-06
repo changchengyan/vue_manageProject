@@ -326,17 +326,17 @@
 
     import * as esriLoader from 'esri-loader';
 
-    import DseToggleTable from '../../common/components/dseToggleTable';
-    import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+    import DseToggleTable from '../../common/components/DseToggleTable';
+    import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
 
 
     import {
         uuid_
     } from '../../utils/uuid';
-    import DseGisModel from '../../common/components/toast/dseGisModel';
-    import DseTableList from '../../common/components/dseTableList';
-    import DseBgModel from '../../common/components/toast/dseBgModel';
-    import DseNormalModel from '../../common/components/toast/dseNormalModel';
+    import DseGisModel from '../../common/components/toast/DseGisModel';
+    import DseTableList from '../../common/components/DseTableList';
+    import DseBgModel from '../../common/components/toast/DseBgModel';
+    import DseNormalModel from '../../common/components/toast/DseNormalModel';
 
     let options = {
         url: window.DSE.arcgis_startJS,

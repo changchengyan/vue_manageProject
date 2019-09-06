@@ -41,11 +41,9 @@
                 this.MenuData = this.menuList;
             },
             breadcrumb(obj){
-                console.log(obj);
                 this.$refs.bread.showItem(obj);
             },
             hidden_aside() {
-                console.log('*************');
                 this.showAside = this.asideStatus;
 
                 this.content_wd = 'calc(100%)';

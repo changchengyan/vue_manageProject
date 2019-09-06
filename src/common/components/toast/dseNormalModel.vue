@@ -75,6 +75,7 @@
       background: #fff;
       width: 500px;
       height: 280px;
+	  // height: 500px;
       left: 50%;
       margin-left: -250px;
       .top-head{

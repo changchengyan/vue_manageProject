@@ -99,8 +99,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
-import dseNormalModel from '../../../common/components/toast/dseNormalModel';
+import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
+import dseNormalModel from '../../../common/components/toast/DseNormalModel';
 // import {
 // 查询巡检对象列表
 // getPipeInspectObjectList,

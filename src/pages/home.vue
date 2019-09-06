@@ -49,7 +49,7 @@
                         <span>我的待办</span>
                     </div>
                     <div class="col alert" @click="showNoticeModel">
-                        <template v-if="wornList.length==0">
+                        <template v-if="mp3URLList.length==0">
                             <img src="../assets/images/common/alert.png" alt="">
                         </template>
                         <template v-else>
@@ -165,7 +165,8 @@
                 <!-- 左侧的通知-->
                 <div class="left-tipPanel" :class="{panelPosition:showPanel==true}">
                     <template v-if="showPanel">
-                        <tip-tabs ref="tipPanel"/>
+<!--                        <tip-tabs ref="tipPanel"/>-->
+                        <yindong_detail />
                     </template>
                     <div class="toggle-bnt" @click="toggleShow">
                         <template v-if="showPanel">
@@ -179,7 +180,7 @@
             </div>
         </div>
         <dse-list-model :list="noticeList" :tips="'报警通知'" ref="notice" @stopMp3="stopMp3">
-            <table class="innerTable head-nobg">
+            <table class="innerTable first-no-line">
                 <thead>
                 <tr>
                     <th><span>时间</span></th>
@@ -190,7 +191,7 @@
                 <template v-if="mp3URLList&&mp3URLList.length>0">
                     <tr v-for="(val,index) in mp3URLList" :key="index">
                         <td :title="val.tm"><span>{{val.tm|formate_tm}}</span></td>
-                        <td :title="val.warnmx"><span>{{val.warnmx}}</span></td>
+                        <td :title="val.warnText"><span>{{val.warnText}}</span></td>
                     </tr>
                 </template>
                 <template v-else>
@@ -202,7 +203,7 @@
             </table>
         </dse-list-model>
         <dse-loading-animation :showAnimate="showAnimate"/>
-        <iframe :src="staticPath+mp3URl" frameborder="0" allow="autoplay"
+        <iframe :src="mp3URl" frameborder="0" allow="autoplay"
                 style="position: absolute;left:0;top:0;z-index: -100;opacity: 0;display:none"></iframe>
 
         <dse-list-model :tips="'报警通知'"   ref="panelModel">
@@ -239,17 +240,18 @@
         mapMutations
     } from 'vuex';
 
-    import DseFuncTools from '../common/components/dseFuncTools';
-    import DseFuzzySearch from '../common/components/dseFuzzySearch';
-    import DseGisMap from '../common/components/dseGisMap';
-    import DseLoadingAnimation from '../common/components/dseLoadingAnimation';
-    import DseTabsToggle from '../common/components/dseTabsToggle';
-    import DseTabsUnderline from '../common/components/dseTabsUnderline';
-    import DseToggleTable from '../common/components/dseToggleTable';
+    import DseFuncTools from '../common/components/DseFuncTools';
+    import DseFuzzySearch from '../common/components/DseFuzzySearch';
+    import DseGisMap from '../common/components/DseGisMap';
+    import DseLoadingAnimation from '../common/components/DseLoadingAnimation';
+    import DseTabsToggle from '../common/components/DseTabsToggle';
+    import DseTabsUnderline from '../common/components/DseTabsUnderline';
+    import DseToggleTable from '../common/components/DseToggleTable';
+    import DseListModel from '../common/components/toast/DseListModel';
 
-
-    import DseListModel from '../common/components/toast/dseListModel';
-    import TipTabs from './tipPanel/TipTabs';
+    // import TipTabs from './tipPanel/TipTabs';
+    import Yindong_detail from './tipPanel/yindong_detail';
+    import {getOneMapSearchList} from "../api/interfaces/oneMap_api";
 
     // 首部tabs 文件
     const PIPEMSG = {
@@ -390,7 +392,7 @@
 
     export default {
         components: {
-            TipTabs,
+            Yindong_detail,
             DseListModel,
             DseToggleTable,
             DseTabsUnderline,
@@ -416,16 +418,13 @@
                     id: 0,
                     label: '管网信息',
                     father: '',
-                    index: 1,
                     ifOnly: false,
                     icon:'/images/symbol/fold.png',
                     children: [{
                         id: 1,
                         label: '主干管',
                         father: '管网信息',
-                        index: 0,
                         ifOnly: false,
-                        selfIndex: 0,
                         layerID: 'pipeline',
                         componentName: MAINSUB,
                         icon:'/images/symbol/pipe.png'
@@ -434,9 +433,7 @@
                             id: 2,
                             label: '支干管',
                             father: '管网信息',
-                            index: 0,
                             ifOnly: false,
-                            selfIndex: 1,
                             layerID: 'pipeline2',
                             componentName: BRANCHMAINSUB,
                             icon:'/images/symbol/pipe.png'
@@ -445,9 +442,7 @@
                             id: 3,
                             label: '支管',
                             father: '管网信息',
-                            index: 0,
                             ifOnly: false,
-                            selfIndex: 2,
                             layerID: 'pipeline3',
                             componentName: BRANCHSUB,
                             icon:'/images/symbol/pipe.png'
@@ -464,9 +459,7 @@
                         id: 11,
                         label: '水库',
                         father: '工程信息',
-                        index: 0,
                         ifOnly: false,
-                        selfIndex: 0,
                         layerID: 'shuiku',
                         componentName: RESERVOIRSUB,
                         icon:'/images/symbol/reservoir.png'
@@ -475,9 +468,7 @@
                             id: 12,
                             label: '水厂',
                             father: '工程信息',
-                            index: 0,
                             ifOnly: false,
-                            selfIndex: 1,
                             layerID: 'shuichang',
                             componentName: FACTORYSUB,
                             icon:'/images/symbol/waterFactory.png'
@@ -486,9 +477,7 @@
                             id: 13,
                             label: '泵站',
                             father: '工程信息',
-                            index: 0,
                             ifOnly: false,
-                            selfIndex: 2,
                             layerID: 'bengzhan',
                             componentName: PUMPSUB,
                             icon:'/images/symbol/pump.png'
@@ -497,9 +486,7 @@
                             id: 14,
                             label: '蓄水池',
                             father: '工程信息',
-                            index: 0,
                             ifOnly: false,
-                            selfIndex: 3,
                             layerID: 'xushuichi',
                             componentName: WATERSUB,
                             icon:'/images/symbol/xsc.png'
@@ -508,9 +495,7 @@
                             id: 15,
                             label: '联户表井',
                             father: '工程信息',
-                            index: 0,
                             ifOnly: false,
-                            selfIndex: 4,
                             layerID: 'dayongshuihu',
                             componentName: USERDEVSUB,
                             icon:'/images/symbol/lhbj.png'
@@ -520,16 +505,13 @@
                     {
                         id: 20,
                         label: '监测信息',
-                        index: 1,
                         ifOnly: true,
                         icon:'/images/symbol/fold.png',
                         children: [{
                             id: 21,
                             label: '水位',
                             father: '监测信息',
-                            index: 1,
                             ifOnly: false,
-                            selfIndex: 0,
                             layerID: 'shuiwei',
                             componentName: LEVSUB,
                             icon:'/images/symbol/shuiwei.png'
@@ -538,9 +520,7 @@
                                 id: 22,
                                 label: '流量',
                                 father: '监测信息',
-                                index: 1,
                                 ifOnly: false,
-                                selfIndex: 1,
                                 layerID: 'liuliang',
                                 componentName: FLOWSUB,
                                 icon:'/images/symbol/flow.png'
@@ -549,9 +529,7 @@
                                 id: 24,
                                 label: '压力',
                                 father: '监测信息',
-                                index: 1,
                                 ifOnly: false,
-                                selfIndex: 3,
                                 layerID: 'yali',
                                 componentName: PRESSUB,
                                 icon:'/images/symbol/press.png'
@@ -560,9 +538,7 @@
                                 id: 25,
                                 label: '水质',
                                 father: '监测信息',
-                                index: 1,
                                 ifOnly: false,
-                                selfIndex: 4,
                                 layerID: 'shuizhi',
                                 componentName: QCSUB,
                                 icon:'/images/symbol/shuizhi.png'
@@ -571,9 +547,7 @@
                                 id: 26,
                                 label: '视频',
                                 father: '监测信息',
-                                index: 1,
                                 ifOnly: false,
-                                selfIndex: 5,
                                 layerID: 'shipin',
                                 componentName: VIDEOSUB,
                                 icon:'/images/symbol/video.png'
@@ -583,7 +557,6 @@
                     {
                         id: 30,
                         label: '巡查检修信息',
-                        index: 2,
                         ifOnly: true,
                         icon:'/images/symbol/fold.png',
                         children: [
@@ -591,9 +564,7 @@
                                 id: 31,
                                 label: '实时信息',
                                 father: '巡查检修信息',
-                                index: 2,
                                 ifOnly: false,
-                                selfIndex: 0,
                                 layerID: 'shishi',
                                 componentName: LIVESUB,
                                 icon:'/images/symbol/woker.png'
@@ -602,9 +573,7 @@
                                 id: 32,
                                 label: '检修信息',
                                 father: '巡查检修信息',
-                                index: 2,
                                 ifOnly: false,
-                                selfIndex: 1,
                                 layerID: 'jianxiu',
                                 componentName: REPAIRSUB,
                                 icon:'/images/symbol/buildProjects.png'
@@ -613,9 +582,7 @@
                                 id: 33,
                                 label: '隐患信息',
                                 father: '巡查检修信息',
-                                index: 2,
                                 ifOnly: false,
-                                selfIndex: 2,
                                 layerID: 'yinhuan',
                                 componentName: DANGERSUB,
                                 icon:'/images/symbol/downDanger.png'
@@ -625,7 +592,6 @@
                     {
                         id: 40,
                         label: '水量水费信息',
-                        index: 3,
                         ifOnly: true,
                         icon:'/images/symbol/fold.png',
                         children:[
@@ -633,7 +599,6 @@
                                 id: 41,
                                 label: '同心县',
                                 father: '水量水费信息',
-                                index: 0,
                                 ifOnly: false,
                                 componentName: ALLAREASUB,
                                 icon:'/images/symbol/fold.png',
@@ -642,9 +607,7 @@
                                         id: 411,
                                         label: '同心东部',
                                         father: '水量水费信息',
-                                        index: 2,
                                         ifOnly: false,
-                                        selfIndex: 1,
                                         layerID: 'txdbfgs',
                                         componentName: EASTSUB,
                                         icon:'/images/symbol/part.png'
@@ -653,9 +616,7 @@
                                         id: 412,
                                         label: '同心西部',
                                         father: '水量水费信息',
-                                        index: 2,
                                         ifOnly: false,
-                                        selfIndex: 2,
                                         layerID: 'txxbfgs',
                                         componentName: WESTSUB,
                                         icon:'/images/symbol/part.png'
@@ -664,9 +625,7 @@
                                         id: 413,
                                         label: '同心中部',
                                         father: '水量水费信息',
-                                        index: 2,
                                         ifOnly: false,
-                                        selfIndex: 2,
                                         layerID: 'txfgs',
                                         componentName: MIDDLESUB,
                                         icon:'/images/symbol/part.png'
@@ -677,7 +636,6 @@
                             id: 42,
                             label: '海源县',
                             father: '水量水费信息',
-                            index: 0,
                             ifOnly: false,
                             layerID: 'hyx',
                             componentName: HAIYUANSUB,
@@ -687,7 +645,6 @@
                                         id: 421,
                                         label: '海源公司',
                                         father: '水量水费信息',
-                                        index: 0,
                                         ifOnly: false,
                                         componentName: HAIYUANSUB,
                                         icon:'/images/symbol/part.png'
@@ -713,7 +670,7 @@
                     pipe: []
                 },
                 headList: [], //一级页签列表
-                subList: [RESERVOIRSUB, FACTORYSUB, WATERSUB, PUMPSUB, USERDEVSUB], //二级页签列表
+                subList: [RESERVOIRSUB, FACTORYSUB, PUMPSUB, WATERSUB, USERDEVSUB], //二级页签列表
                 subContentList: PROJECTMODULE, //抽屉显示的内容区
                 noticeMusicURL: '', //连续播放的音频URL
                 searchLists: [], //模糊查询的数据列表
@@ -759,88 +716,10 @@
                 },
                 showAnimate: false, //模拟管阀的  导出动画
                 getPipe_id_fm: null, //获取点击管道 ，进行关阀模拟
-                wornList: [
-                    {
-                        a: '河东加压泵站出水压力监测点',
-                        b: '压力',
-                        stm: '2019-8-5 21：20',
-                        warnText: '报警消息，压力监测点、河东加压泵站出水压力监测点，当前监测值0.5MPa正常范围0.2-0.4MPa',
-                        e: '2019-8-5 22：20',
-                    },{
-                        a: '旱天岭1#高位蓄水池水位监测点',
-                        b: '水位',
-                        stm: '2019-8-5 21：20',
-                        warnText: '报警消息，水位监测点、旱天岭1#高位蓄水池水位监测点，当前监测值3m,正常范围0-2.5m',
-                        e: '2019-8-5 22：20',
-                    },{
-                        a: '西部净水厂清水池水位监测点',
-                        b: '水位',
-                        stm: '2019-8-5 21：20',
-                        warnText: '报警消息，水位监测点、西部净水厂清水池水位监测点，当前监测值3m,正常范围0-2.5m',
-                        e: '2019-8-5 22：20',
-                    },{
-                        a: '丁塘加压泵站出水压力监测点',
-                        b: '压力',
-                        stm: '2019-8-5 21：20',
-                        warnText: '报警消息，压力监测点、丁塘加压泵站监测点，当前监测值0.8MPa正常范围0.2-0.4MPa',
-                        e: '2019-8-5 22：20',
-                    },{
-                        a: '丁塘加压泵站出水管网流量监测点',
-                        b: '流量',
-                        stm: '2019-8-5 21：20',
-                        warnText: '报警消息，流量监测点、丁塘加压泵站出水管网流量监测点，当前监测值5m3/s正常范围4m3/s-2m3/s',
-                        e: '2019-8-5 22：20',
-                    },{
-                        a: '西部净水厂视频监测点',
-                        b: '视频',
-                        stm: '2019-8-5 21：20',
-                        warnText: '报警消息，视频监测点、西部净水厂视频监测点，当前未采集到视频监测信息',
-                        e: '2019-8-5 22：20',
-                    }
-                ], //预警列表
                 mp3URl: '',
                 mp3List_index: 0,
-                mp3List: [
-                    {
-                        url:'/mp3s/hd_pump_press.mp3'
-                    },
-                    {
-                        url:'/mp3s/htl_pool_lev.mp3'
-                    },
-                    {
-                        url:'/mp3s/jsc_lev.mp3'
-                    },
-                    {
-                        url:'/mp3s/dt_pump_press.mp3'
-                    },
-                    {
-                        url:'/mp3s/dt_pump_flow.mp3'
-                    },
-                    {
-                        url:'/mp3s/jsc_video.mp3'
-                    }
-                ],
                 staticPathUrl: '', //静态文件前缀
-                mp3URLList: [
-                    {
-                        url:'/mp3s/hd_pump_press.mp3'
-                    },
-                    {
-                        url:'/mp3s/htl_pool_lev.mp3'
-                    },
-                    {
-                        url:'/mp3s/jsc_lev.mp3'
-                    },
-                    {
-                        url:'/mp3s/dt_pump_press.mp3'
-                    },
-                    {
-                        url:'/mp3s/dt_pump_flow.mp3'
-                    },
-                    {
-                        url:'/mp3s/jsc_video.mp3'
-                    }
-                ], // 播放音频列表
+                mp3URLList: [], // 播放音频列表
                 currentPlayIndex: 0, //当前音频播放的索引
                 mp3_timer: null, //播放音乐的定时器
                 legendInfos: [], //保存所有图层图例信息
@@ -1028,6 +907,11 @@
                 };
             },
             nodeChange(item, ifChecked, children) {
+            	// console.warn('start');
+	            // console.warn(item);
+	            // console.warn(ifChecked);
+	            // console.warn(children);
+            	// console.warn('end');
                 let that = this;
                 that.simulate = false;
                 this.$nextTick(() => {
@@ -1194,7 +1078,14 @@
             },
             // 回调的 模糊查询函数
             callBackList(name) {
-
+                let that = this;
+                getOneMapSearchList({
+                    keyname:name
+                },that).then(res=>{
+                    console.log(res);
+                    let {data} = res;
+                    that.searchLists = data&&data.length>0?[...data]:[];
+                });
             },
             // 跳转到 图层编辑页面
             gotoEditGis() {
@@ -1204,64 +1095,67 @@
             },
             // 选择模糊查询的某一个 要素
             selectThis(val) {
-                this.defaultName = val.name;
-                // 逻辑处理  显示图层 或者是其它
-                let type = val.type;
-                switch (val.type) {
+                let that = this;
+                this.defaultName = val.stnm;
+                // <---------逻辑处理  显示图层 或者是其它 (同时构造查询条件)----->
+                // 1.水质2.水压3.流量，4水位 ，5视频，6运行监控 7水厂,8水库,9泵站10, 蓄水池11. 联户表井,12管线
+                let type = val.jctype;
+                let json = {};
+                json.eleId = val.stcd;
+                json.name = val.stnm;
+                switch (type) {
                     case '1':
-                        type = '水库';
-                        break;
-                    case '2':
-                        type = '水厂';
-                        break;
-                    case '3':
-                        type = '泵站';
-                        break;
-                    case '4':
-                        type = '蓄水池';
-                        break;
-                    case '5':
-                        type = '联户表井';
-                        break;
-                    case '6':
-                        type = '设备信息';
-                        break;
-                    case '7':
-                        type = '水位';
-                        break;
-                    case '8':
-                        type = '流量';
-                        break;
-                    case '9':
+                        json.layerID = 'shuizhi';
                         type = '水质';
                         break;
-                    case '10':
+                    case '2':
+                        json.layerID = 'yali';
                         type = '压力';
                         break;
-                    case '11':
+                    case '3':
+                        json.layerID = 'liuliang';
+                        type = '流量';
+                        break;
+                    case '4':
+                        json.layerID = 'shuiwei';
+                        type = '水位';
+                        break;
+                    case '5':
+                        json.layerID = 'shipin';
                         type = '视频';
                         break;
-                    case '12':
-                        type = '实时信息';
+                    case '6':
+                        json.layerID = 'shishi';
+                        type = '运行监控';
                         break;
-                    case '13':
-                        type = '检修信息';
+                    case '7': // 水厂
+                        json.layerID = 'shuichang';
+                        type = '水厂';
                         break;
-                    case '14':
-                        type = '隐患信息';
+                    case '8': // 水库
+                        json.layerID = 'shuiku';
+                        type = '水库';
                         break;
-                    case '15':
+                    case '9': // 泵站
+                        json.layerID = 'bengzhan';
+                        type = '泵站';
+                        break;
+                    case '10': // 蓄水池
+                        json.layerID = 'xushuichi';
+                        type = '蓄水池';
+                        break;
+                    case '11': // 联户表井
+                        json.layerID = 'dayongshuihu';
+                        type = '联户表井';
+                        break;
+                    case '12': // 管道
+                        json.layerID = 'pipeline';
                         type = '主干管';
                         break;
-                    case '16':
-                        type = '支干管';
-                        break;
-                    case '17':
-                        type = '支管';
-                        break;
                 }
+                // <--------显示图片(同时构造查询条件)---------/>
 
-
+                // <---------------获取树的节点的激活项 如果没有激活，就激活它------------------->
                 let list = this.$refs.tree.getCheckedNodes();
                 let flag = false;
                 for (let i = 0; i < list.length; i++) {
@@ -1276,17 +1170,48 @@
                         id: '',
                         label: ''
                     };
-                    let temp_type = val.type;
-                    switch (temp_type) {
+                    switch (val.jctype) {
                         case '1':
-                            temp_json.id = 11;
-                            temp_json.label = '水库';
-                            temp_json.layerID = 'pipeline';
-                            temp_json.componentName = RESERVOIRSUB;
-                            temp_json.father = '工程信息';
+                            temp_json.id = 25;
+                            temp_json.label = '水质';
+                            temp_json.layerID = 'shuizhi';
+                            temp_json.componentName = QCSUB;
+                            temp_json.father = '监测信息';
                             tree_nodeList.push(temp_json);
                             break;
                         case '2':
+                            temp_json.id = 24;
+                            temp_json.label = '压力';
+                            temp_json.layerID = 'yali';
+                            temp_json.componentName = PRESSUB;
+                            temp_json.father = '监测信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+                        case '3':
+                            temp_json.id = 22;
+                            temp_json.label = '流量';
+                            temp_json.layerID = 'liuliang';
+                            temp_json.componentName = FLOWSUB;
+                            temp_json.father = '监测信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+                        case '4':
+                            temp_json.id = 21;
+                            temp_json.label = '水位';
+                            temp_json.layerID = 'shuiwei';
+                            temp_json.componentName = LEVSUB;
+                            temp_json.father = '监测信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+                        case '5':
+                            temp_json.id = 26;
+                            temp_json.label = '视频';
+                            temp_json.layerID = 'shipin';
+                            temp_json.componentName = VIDEOSUB;
+                            temp_json.father = '监测信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+                        case '7':
                             temp_json.id = 12;
                             temp_json.label = '水厂';
                             temp_json.layerID = 'shuichang';
@@ -1294,7 +1219,15 @@
                             temp_json.father = '工程信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '3':
+                        case '8':
+                            temp_json.id = 11;
+                            temp_json.label = '水库';
+                            temp_json.layerID = 'shuiku';
+                            temp_json.componentName = RESERVOIRSUB;
+                            temp_json.father = '工程信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+                        case '9':
                             temp_json.id = 13;
                             temp_json.label = '泵站';
                             temp_json.layerID = 'bengzhan';
@@ -1302,63 +1235,32 @@
                             temp_json.father = '工程信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '4':
+                        case '10':
                             temp_json.id = 14;
                             temp_json.label = '蓄水池';
-                            temp_json.layerID = 'fire_hydrant';
-                            temp_json.componentName = RESERVOIRSUB;
+                            temp_json.layerID = 'xushuichi';
+                            temp_json.componentName = WATERSUB;
                             temp_json.father = '工程信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '5':
-                            temp_json.id = 15;
-                            temp_json.label = '联户表井';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = FACTORYSUB;
-                            temp_json.father = '工程信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '6':
-                            temp_json.id = 21;
-                            temp_json.label = '水位';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = LEVSUB;
-                            temp_json.father = '监测信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '7':
-                            temp_json.id = 22;
-                            temp_json.label = '流量';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = FLOWSUB;
-                            temp_json.father = '监测信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '8':
-                            temp_json.id = 23;
-                            temp_json.label = '水质';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = QCSUB;
-                            temp_json.father = '监测信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '9':
-                            temp_json.id = 24;
-                            temp_json.label = '压力';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = LEVSUB;
-                            temp_json.father = '监测信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '10':
-                            temp_json.id = 25;
-                            temp_json.label = '视频';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = VIDEOSUB;
-                            temp_json.father = '监测信息';
                             tree_nodeList.push(temp_json);
                             break;
                         case '11':
+                            temp_json.id = 15;
+                            temp_json.label = '联户表井';
+                            temp_json.layerID = 'dayongshuihu';
+                            temp_json.componentName = USERDEVSUB;
+                            temp_json.father = '工程信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+                        case '12':
+                            temp_json.id = 1;
+                            temp_json.label = '主干管';
+                            temp_json.layerID = 'pipeline';
+                            temp_json.componentName = MAINSUB;
+                            temp_json.father = '管网信息';
+                            tree_nodeList.push(temp_json);
+                            break;
+
+                        case '22':
                             temp_json.id = 30;
                             temp_json.label = '设备信息';
                             temp_json.layerID = 'shuichang';
@@ -1366,7 +1268,7 @@
                             temp_json.father = '设备信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '12':
+                        case '23':
                             temp_json.id = 31;
                             temp_json.label = '实时信息';
                             temp_json.layerID = 'shuichang';
@@ -1374,7 +1276,7 @@
                             temp_json.father = '巡查检修信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '13':
+                        case '24':
                             temp_json.id = 32;
                             temp_json.label = '检修信息';
                             temp_json.layerID = 'shuichang';
@@ -1382,7 +1284,7 @@
                             temp_json.father = '巡查检修信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '14':
+                        case '25':
                             temp_json.id = 30;
                             temp_json.label = '隐患信息';
                             temp_json.layerID = 'shuichang';
@@ -1390,15 +1292,8 @@
                             temp_json.father = '巡查检修信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '15':
-                            temp_json.id = 1;
-                            temp_json.label = '主干管';
-                            temp_json.layerID = 'shuichang';
-                            temp_json.componentName = MAINSUB;
-                            temp_json.father = '管网信息';
-                            tree_nodeList.push(temp_json);
-                            break;
-                        case '16':
+
+                        case '18':
                             temp_json.id = 2;
                             temp_json.label = '支干管';
                             temp_json.layerID = 'shuichang';
@@ -1406,7 +1301,7 @@
                             temp_json.father = '管网信息';
                             tree_nodeList.push(temp_json);
                             break;
-                        case '17':
+                        case '19':
                             temp_json.id = 3;
                             temp_json.label = '支管';
                             temp_json.layerID = 'shuichang';
@@ -1415,72 +1310,20 @@
                             tree_nodeList.push(temp_json);
                             break;
                     }
-                    let temp_list = list.concat(tree_nodeList);
+                    let temp_list = [...list,...tree_nodeList];
+                    console.log(temp_list);
                     this.$refs.tree.setCheckedNodes(temp_list);
                     this.nodeChange(temp_json, true, null);
                 }
+                // <---------------获取树的节点的激活项 如果没有激活，就激活它-------------------/>
 
-                let json = {};
-                json.eleId = val.id;
-                json.name = val.name;
+               //搜索 该要素
+                this.$nextTick(()=>{
+                    setTimeout(()=>{
+                        that.IamHere(json);
+                    },1000);
+                });
 
-                switch (val.type) {
-                    case '1': // 计量间
-                        json.layerID = 'jiliangjian';
-                        break;
-                    case '2': // 大用户
-                        json.layerID = 'dayongshuihu';
-                        break;
-                    case '3': // 泵站
-                        json.layerID = 'bengzhan';
-                        break;
-                    case '4': // 水库
-                        json.layerID = 'shuiku';
-                        break;
-                    case '5': // 水厂
-                        json.layerID = 'shuichang';
-                        break;
-                    case '6': // 管道
-                        json.layerID = 'pipeline';
-                        break;
-                    case '7': // 阀门
-                        json.layerID = 'valve';
-                        break;
-                    case '8': // 消防栓  检修井
-                        json.layerID = 'fire_hydrant';
-                        break;
-                    case '9': // 检修井
-                        json.layerID = 'manhole';
-                        break;
-                    case '10':
-                        json.layerID = 'partition';
-                        break;
-                    case '11':
-                        json.layerID = 'shuizhi';
-                        break;
-                    case '12':
-                        json.layerID = 'yali';
-                        break;
-                    case '13':
-                        json.layerID = 'liuliang';
-                        break;
-                    case '14':
-                        json.layerID = 'shipin';
-                        break;
-                    case '15':
-                        json.layerID = 'yali';
-                        break;
-                    case '16':
-                        json.layerID = 'liuliang';
-                        break;
-                    case '17':
-                        json.layerID = 'shipin';
-                        break;
-                }
-
-                console.log(val);
-                console.log(json);
-                this.IamHere(json);
             },
             //显示 通知的弹窗
             showNoticeModel() {
@@ -1493,7 +1336,7 @@
                 if (this.mp3_timer) {
                     clearInterval(that.mp3_timer);
                 }
-                this.mp3URl = (this.mp3URLList)[0];
+                this.mp3URl = (this.mp3URLList)[0].voiceUrl;
                 let mp3List = this.mp3URLList;
                 this.mp3_timer = setInterval(() => {
                     that.mp3List_index += 1;
@@ -1502,7 +1345,7 @@
                         clearInterval(that.mp3_timer);
                         return;
                     }
-                    that.mp3URl = mp3List[that.mp3List_index];
+                    that.mp3URl = mp3List[that.mp3List_index].voiceUrl;
                 }, 14 * 1000);
             },
 
@@ -1630,7 +1473,7 @@
             // this.getWarnList_();
             // this.mp3URLList = this.$store.getters.get_audioList;
             this.mp3URLList = this.$store.getters.get_warningList;
-            this.mp3URl = (this.mp3URLList)[0].url;
+            this.mp3URl = (this.mp3URLList)[0].voiceUrl;
 
         },
         mounted() {
@@ -1646,7 +1489,7 @@
                     clearInterval(that.mp3_timer);
                     return;
                 }
-                that.mp3URl = mp3List[that.mp3List_index].url;
+                that.mp3URl = mp3List[that.mp3List_index].voiceUrl;
             }, 14 * 1000);
 
             //获取图层中的图例信息

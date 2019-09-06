@@ -2,7 +2,9 @@
 	<div class="globalHeader">
 		<div class="nav">
 			<h1 class="logo" @click="backLogin">
-				<img src="../../../build/logo.png" />
+				<!-- <img src="../../../build/logo.png" /> -->
+				<img src="../../assets/images/common/logo.png" alt="">
+
 				<span>东深农饮信息化管理平台</span>
 			</h1>
 			<ul class="row">

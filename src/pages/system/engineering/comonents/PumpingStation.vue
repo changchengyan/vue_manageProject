@@ -18,22 +18,7 @@
 				<el-input v-else v-model="ruleForm[item.name]" :placeholder="item.placeholder" :disabled="item.disabled"></el-input>
 			</el-form-item>
 			<!-- 上传预览图片 -->
-			<el-form-item label="图片" prop="files" style="width: 100%;">
-				<el-upload
-					style="margin-top: 16px;"
-					name="files"
-					list-type="picture-card"
-					multiple
-					:action="upload.action"
-					:with-credentials="true"
-					:data="{ id: 1 }"
-					:on-success="onHandlePictureSuccess"
-					:on-preview="onHandlePictureCardPreview"
-					:on-remove="onHandlePictureCardRemove"
-				>
-					<i class="el-icon-plus"></i>
-				</el-upload>
-			</el-form-item>
+			<dse-upload :fileList="fileList" :files="files" @onHandlePictureSuccess="onHandlePictureSuccess" @onHandlePictureCardRemove="onHandlePictureCardRemove" />
 			<!-- form 提交按钮 -->
 			<div class="actions">
 				<span class="save" @click="onHandleSubmitForm('ruleForm')">保存</span>
@@ -44,31 +29,16 @@
 				<el-button type="primary" @click="onHandleSubmitForm('ruleForm')">保&nbsp;存</el-button>
 			</el-form-item> -->
 		</el-form>
-
-		<!-- 上传 -->
-		<el-dialog :visible.sync="upload.visible" size="tiny"><img width="100%" :src="upload.imageUrl" alt="" /></el-dialog>
 	</div>
 </template>
 
 <script>
 // 新增修改水库
 import { mapGetters } from 'vuex';
+import DseUpload from '../../../../common/components/DseUpload';
 import { systemAction } from '../../../../mixins/system';
 import URLS from '../../../../api/urls';
-import { VDATA } from '../../../../utils/el_validater';
-
-//限制 最大整数
-function isDigitsAndRange(rule, val, callBack) {
-	let vdt = VDATA(val, {
-		digits: { msg: '您输入的不是整数' },
-		range: { param: [0, 999], msg: '请输入小于999的整数!' }
-	});
-	if (!vdt.result) {
-		callBack(new Error(vdt.msg));
-	} else {
-		callBack();
-	}
-}
+import { VDT } from '../../../../utils/el_validater';
 
 export default {
 	props: {
@@ -95,65 +65,40 @@ export default {
 	computed: {
 		...mapGetters(['get_partition'])
 	},
+	components: {
+		DseUpload
+	},
 	data() {
 		return {
 			name: 'systemEngineeringIndex',
 			formList: [],
 			ruleForm: {},
 			rules: {},
-			upload: {
-				action: URLS.uploadFiles,
-				imageUrl: '',
-				visible: false
-			},
-			fileList: []
+			fileList: [],
+			files: []
 		};
 	},
 	methods: {
+		// 上传图片成功后返回
 		onHandlePictureSuccess(file) {
 			const that = this;
 
-			const { filename = {} } = file;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList.push(path);
+			that.files.push(file);
 		},
-		onHandlePictureCardPreview(file, fileList) {
+		// 上传图片成功后删除
+		onHandlePictureCardRemove(files = []) {
 			const that = this;
 
-			const { url } = file;
-
-			that.upload = {
-				...that.upload,
-				imageUrl: url,
-				visible: true
-			};
-		},
-		onHandlePictureCardRemove(file) {
-			const that = this;
-
-			const { response = {} } = file;
-			const { filename = [] } = response;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList = that.fileList.filter((item = {}) => {
-				if (item === path) return false;
-				return true;
-			});
-
-			that.upload = {
-				...that.upload,
-				imageUrl: '',
-				visible: false
-			};
+			// 删除图片
+			that.files = files;
 		},
 		onHandleSubmitForm(formName) {
 			const that = this;
 
-			const { ruleForm, fileList } = that;
+			const { ruleForm, files = [] } = that;
 			that.$refs[formName].validate(valid => {
 				if (valid) {
-					that.$emit('onHandleSubmit', { ...ruleForm, fileList });
+					that.$emit('onHandleSubmit', { ...ruleForm, files });
 				} else {
 					console.log('error submit!!');
 					return false;
@@ -255,7 +200,9 @@ export default {
 					runMode,
 					lgtd,
 					compym,
-					desHead
+					desHead,
+
+					files
 				} = data;
 
 				/*
@@ -321,11 +268,22 @@ export default {
 						item.disabled = false;
 					}
 				});
+
+				// 填充图片
+				if (Array.isArray(files) && files[0]) {
+					that.files = files;
+					that.fileList = that.files.map((item = {}) => ({
+						name: item.fileName,
+						url: window.static_baseUrl + '/' + item.filePath
+					}));
+				}
 			}
 		},
 		// 初始化分区
 		_initPartition() {
+			
 			const that = this;
+			
 			const { cwsCd } = that.data;
 
 			that.formList.find((item = {}) => {
@@ -375,7 +333,7 @@ export default {
 				},
 				{
 					name: 'dszfl',
-					label: '设计规模(万方/天)'
+					label: '设计规模(m³/天)'
 				},
 				{
 					name: 'lgtd',
@@ -460,9 +418,35 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				lgtd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
+				lgtd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的经度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lgtd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
+				lttd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的纬度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lttd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
 				compYm: [COMMON_RULES_CONFIG],
-				lttd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
 				engMan: [COMMON_RULES_CONFIG],
 				projScal: [COMMON_RULES_CONFIG],
 				cwsCd: [{ ...COMMON_RULES_CONFIG, required: true }],

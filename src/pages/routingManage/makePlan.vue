@@ -108,7 +108,7 @@
 
 
     import DseView from '../../common/components/toast/DseView';
-    import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+    import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
     import DseShuttleBox from '../../common/components/DseShuttleBox';
 
     import {

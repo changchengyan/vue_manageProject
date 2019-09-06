@@ -99,6 +99,11 @@
                 type:Boolean,
                 defaultProps:false
             },
+            //false则表示为保存失败，true 则保存成功
+            flag:{
+                type:Boolean,
+                defaultProps:false
+            },
             // 确认删除的 弹窗中的 文字
             noText:{
                 type:String,

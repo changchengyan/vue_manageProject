@@ -173,6 +173,14 @@ export function saveOrUpDseWateruseB(params, context) {
 		params
 	}, context);
 }
+// 系统配置-工程配置-获取联户表井用户
+export function getWateruseBList(params, context) {
+	return fetch({
+		url: domainURL.getWateruseBList,
+		method: 'post',
+		params
+	}, context);
+}
 
 /**
  *

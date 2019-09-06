@@ -1,4 +1,4 @@
-module.exports = [{
+export const   listTable1 = [{
 		a: '中源水务公司',
 		b: 1176340.00,
 		c: 1162929.11,

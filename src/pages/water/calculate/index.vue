@@ -115,8 +115,8 @@
 </template>
 
 <script>
-import Tab from '../../../common/components/dseTab';
-import DseSaveStatus from '../../../common/components/toast/dseSaveStatus';
+import Tab from '../../../common/components/DseTab';
+import DseSaveStatus from '../../../common/components/toast/DseSaveStatus';
 import _2020 from './data/2020';
 import _2019 from './data/2019';
 import _2018 from './data/2018';

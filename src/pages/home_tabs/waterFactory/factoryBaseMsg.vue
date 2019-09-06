@@ -1,19 +1,25 @@
 <template>
     <div id="BaseMsg_">
       <div class="table-content">
-        <table class="innerTable">
+        <table class="innerTable first-no-line">
           <tbody>
           <tr>
-            <td><span>装机容量（KW）</span></td>
-            <td><span>{{baseInfo.capacity}}</span></td>
+            <td><span>日生产能力:</span></td>
+            <td><span>{{baseInfo.dayCap}}</span></td>
+            <td><span>供水范围:</span></td>
+            <td><span>{{baseInfo.wsReg}}</span></td>
           </tr>
           <tr>
-            <td><span>供水负荷率</span></td>
-            <td><span>{{baseInfo.rate}}</span></td>
+            <td><span>供水对象:</span></td>
+            <td><span>{{baseInfo.wsObj}}</span></td>
+            <td><span>供水人口:</span></td>
+            <td><span>{{baseInfo.wsPp}}</span></td>
           </tr>
           <tr>
-            <td><span>日供水量</span></td>
-            <td><span>{{baseInfo.dayProvide}}</span></td>
+            <td><span>负责人:</span></td>
+            <td><span>{{baseInfo.fzrnm}}</span></td>
+            <td><span>负责人电话:</span></td>
+            <td><span>{{baseInfo.fzrtel}}</span></td>
           </tr>
           </tbody>
         </table>
@@ -29,29 +35,53 @@
          </template>
         </div>
       </div>
+
+
     </div>
 </template>
 
 <script>
 
 
+    import {getWrWfctB} from '../../../api/interfaces/oneMap_api';
+
     export default {
-        name: 'factoryBaseMsg',
-      props:['factoryId'],
+      name: 'factoryBaseMsg',
+      props:{
+        factoryId:{
+          type:String,
+          defaultProps:''
+        }
+      },
       data(){
           return{
             baseInfo:{
-              capacity:'200',
-              rate:'89',
-              dayProvide:'3000'
+              dayCap:'',
+              wsReg:'',
+              wsObj:'',
+              wsPp:'',
+              fzrnm:'',
+              fzrtel:''
             },
             imgs:[],
             staticPathUrl:''
           };
       },
       methods:{
+        // 获取 水厂的 基本信息
         getWaterworksBase_(){
+          let that = this;
+          getWrWfctB({
+            wfctCd:that.factoryId
+          },that).then(res=>{
 
+            let {data} = res;
+            that.baseInfo = {
+              ...that.baseInfo,
+              ...data
+            }
+
+          });
         }
       },
       created() {
@@ -65,6 +95,7 @@
 #BaseMsg_{
   width: 100%;
   height: 100%;
+
   table{
     border-top:1px solid #e9e9e9;
   }
@@ -99,5 +130,24 @@
 
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 </style>

@@ -1,0 +1,183 @@
+<template>
+	<div class="article">
+		<!-- 操作栏 -->
+		<div class="handle">
+			<el-form :inline="true" class="form">
+				<el-form-item label="分区选择:">
+					<el-select v-model="tabsList[tabIndex].areaItem" placeholder="请选择分区" @change="onHandleChangeArea" @keyup.enter.native="onHandleChangeArea">
+						<el-option v-for="item in areaList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="水厂名称:">
+					<el-select
+						v-model="tabsList[tabIndex].engineeringValue"
+						placeholder="请输入水厂名称"
+						@change="onHandleChangeEngineering"
+						@keyup.enter.native="onHandleChangeEngineering"
+					>
+						<el-option v-for="item in tabsList[tabIndex].engineerings" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="监测点:">
+					<el-select v-model="tabsList[tabIndex].monitorValue" placeholder="请选择监测点" @change="onHandleChangeMonitor" @keyup.enter.native="onHandleChangeMonitor">
+						<el-option v-for="item in tabsList[tabIndex].monitors" :key="item.value" :label="item.label" :value="item.value"></el-option>
+					</el-select>
+				</el-form-item>
+				<el-form-item><el-button type="primary" @click="onHandleSearch">搜索</el-button></el-form-item>
+				<el-form-item label="时间:">
+					<el-date-picker
+						v-model="tabsList[tabIndex].date"
+						type="daterange"
+						range-separator="至"
+						start-placeholder="开始日期"
+						end-placeholder="结束日期"
+						format="yyyy-MM-dd"
+						:clearable="false"
+						@change="onHandleDatePicker($event, 0)"
+						@keyup.enter.native="onHandleDatePicker($event, 0)"
+					></el-date-picker>
+				</el-form-item>
+			</el-form>
+		</div>
+		<!-- 图表 -->
+		<div class="chart">
+			<div class="category" ref="ChartCategory0"></div>
+			<div v-show="tabsList[tabIndex].monitorType === '1'" class="chart-radios">
+				<el-radio v-model="tabsList[tabIndex].flag" label="1" @change="onHandleRadioToogle">浊度</el-radio>
+				<el-radio v-model="tabsList[tabIndex].flag" label="2" @change="onHandleRadioToogle">余氯</el-radio>
+			</div>
+		</div>
+		<!-- 表格 -->
+		<div class="globalTable">
+			<table class="innerTable">
+				<thead>
+					<tr>
+						<th v-for="item in tabsList[tabIndex].columns" :key="item.key">
+							<span>{{ item.name }}</span>
+						</th>
+						<th style="width: 180px; text-align: center;"><span>操作</span></th>
+					</tr>
+				</thead>
+				<tbody>
+					<template v-if="tabsList[tabIndex].list && tabsList[tabIndex].list.length">
+						<tr v-for="(item, i) in tabsList[tabIndex].list" :key="i">
+							<td>
+								<span>{{ item.tm }}</span>
+							</td>
+							<td>
+								<span>{{ item.stnm }}</span>
+							</td>
+							<td>
+								<span>
+									{{
+										item.jctype === '1'
+											? tabsList[tabIndex].flag === '1'
+												? item.turb + '（NTU）'
+												: tabsList[tabIndex].flag === '2'
+												? item.chl + '（mg/L）'
+												: item.turb + '（NTU）'
+											: item.jctype === '2'
+											? item.wgage + '（MPa）'
+											: item.jctype === '3'
+											? item.q + '（m³/h）'
+											: item.jctype === '4'
+											? item.rz + '（m）'
+											: ''
+									}}
+								</span>
+							</td>
+							<td class="btns" @click="onHandleListModelVisible({ ...item, $index: i })"><span style="margin-right: 0px">修改</span></td>
+						</tr>
+					</template>
+					<template v-else>
+						<tr>
+							<td colspan="4"><span style="line-height: 30px">暂时没有数据！</span></td>
+						</tr>
+					</template>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</template>
+
+<script>
+export default {
+	props: {
+		tabIndex: {
+			type: Number,
+			default() {
+				return 0;
+			}
+		},
+		tabsList: {
+			type: Array,
+			default() {
+				return [{}];
+			}
+		},
+		areaList: {
+			type: Array,
+			default() {
+				return [{}];
+			}
+		},
+		onHandleChangeArea: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		},
+		onHandleChangeEngineering: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		},
+		onHandleChangeMonitor: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		},
+		onHandleSearch: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		},
+		// getThisTime
+		onHandleDatePicker: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		},
+		// showThisChart_waterFactory
+		onHandleRadioToogle: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		},
+		onHandleListModelVisible: {
+			type: Function,
+			default() {
+				return () => {};
+			}
+		}
+	},
+	// data() {
+	// 	return {
+	// 		tabsList: [],
+	// 		areaList: []
+	// 	};
+	// },
+	methods: {
+		name() {}
+	}
+};
+</script>
+
+<style lang="scss" scoped="scoped">
+@import './style.scss';
+</style>

@@ -541,7 +541,7 @@
 </template>
 
 <script>
-    import DseSaveStatus from '../../common/components/toast/dseSaveStatus';
+    import DseSaveStatus from '../../common/components/toast/DseSaveStatus';
     import DseView from '../../common/components/toast/DseView';
 
 

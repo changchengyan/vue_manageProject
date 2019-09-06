@@ -6,7 +6,7 @@
 </template>
 
 <script>
-	import Tab from '../../../common/components/dseTab';
+	import Tab from '../../../common/components/DseTab';
 
 let DEVSTATISTIC = ()=>import('@/pages/material/analysis/devStatistic');
 let SPAREPARTS = ()=>import('@/pages/material/analysis/spareParts');

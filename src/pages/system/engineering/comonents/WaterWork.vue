@@ -12,41 +12,23 @@
 				</template>
 				<!-- 日期选择 -->
 				<template v-else-if="item.type === 3">
-					<el-date-picker v-model="ruleForm[item.name]" type="month"  :placeholder="item.placeholder" value-format="yyyyMM"></el-date-picker>
+					<el-date-picker v-model="ruleForm[item.name]" type="month" :placeholder="item.placeholder" value-format="yyyyMM"></el-date-picker>
 				</template>
 				<!-- 文本框 -->
 				<el-input v-else v-model="ruleForm[item.name]" :placeholder="item.placeholder" :disabled="item.disabled"></el-input>
 			</el-form-item>
 			<!-- 上传预览图片 -->
-			<el-form-item label="图片" prop="files" style="width: 100%;">
-				<el-upload
-					style="margin-top: 16px;"
-					name="files"
-					list-type="picture-card"
-					multiple
-					:action="upload.action"
-					:with-credentials="true"
-					:data="{ id: 1 }"
-					:on-success="onHandlePictureSuccess"
-					:on-preview="onHandlePictureCardPreview"
-					:on-remove="onHandlePictureCardRemove"
-				>
-					<i class="el-icon-plus"></i>
-				</el-upload>
-			</el-form-item>
+			<dse-upload :fileList="fileList" :files="files" @onHandlePictureSuccess="onHandlePictureSuccess" @onHandlePictureCardRemove="onHandlePictureCardRemove" />
 			<!-- form 提交按钮 -->
 			<div class="actions">
-			    <span class="save" @click="onHandleSubmitForm('ruleForm')">保存</span>
-			    <span class="cancel" @click="onHandleCancel">取消</span>
+				<span class="save" @click="onHandleSubmitForm('ruleForm')">保存</span>
+				<span class="cancel" @click="onHandleCancel">取消</span>
 			</div>
 			<!-- <el-form-item class="formBtns">
 				<el-button @click="onHandleCancel">返&nbsp;回</el-button>
 				<el-button type="primary" @click="onHandleSubmitForm('ruleForm')">保&nbsp;存</el-button>
 			</el-form-item> -->
 		</el-form>
-
-		<!-- 上传 -->
-		<el-dialog :visible.sync="upload.visible" size="tiny"><img width="100%" :src="upload.imageUrl" alt="" /></el-dialog>
 	</div>
 </template>
 
@@ -54,15 +36,36 @@
 // 新增修改水厂
 // import uuidv1 from 'uuid/v1';
 import { mapGetters } from 'vuex';
+import DseUpload from '../../../../common/components/DseUpload';
 import { systemAction } from '../../../../mixins/system';
 import URLS from '../../../../api/urls';
-import { VDATA } from '../../../../utils/el_validater';
+import { VDT, VDATA } from '../../../../utils/el_validater';
 
-//限制 最大整数
-function isDigitsAndRange(rule, val, callBack) {
+function notHan(rule, val, callBack) {
 	let vdt = VDATA(val, {
-		digits: { msg: '您输入的不是整数' },
-		range: { param: [0, 999], msg: '请输入小于999的整数!' }
+		notHan: { msg: '请输入字母或者数字!' }
+	});
+	if (!vdt.result) {
+		callBack(new Error(vdt.msg));
+	} else {
+		callBack();
+	}
+}
+
+function isNumber(rule, val, callBack) {
+	let vdt = VDATA(val, {
+		number: { msg: '您输入的数字有误' }
+	});
+	if (!vdt.result) {
+		callBack(new Error(vdt.msg));
+	} else {
+		callBack();
+	}
+}
+
+function isDigits(rule, val, callBack) {
+	let vdt = VDATA(val, {
+		digits: { msg: '您输入的不是整数' }
 	});
 	if (!vdt.result) {
 		callBack(new Error(vdt.msg));
@@ -99,65 +102,46 @@ export default {
 			ruleForm: {},
 			rules: {},
 			upload: {
-				action: '/api/upload' || URLS.uploadFiles,
+				// action: '/api/upload' || URLS.uploadFiles,
+				action: URLS.uploadFiles,
 				imageUrl: '',
 				visible: false
 			},
-			fileList: []
+			fileList: [],
+			files: []
 		};
 	},
 	mixins: [systemAction],
 	computed: {
 		...mapGetters(['get_partition'])
 	},
+	components: {
+		DseUpload
+	},
 	methods: {
+		// 上传图片成功后返回
 		onHandlePictureSuccess(file) {
 			const that = this;
 
-			const { filename = {} } = file;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList.push(path);
+			that.files.push(file);
 		},
-		onHandlePictureCardPreview(file, fileList) {
+		// 上传图片成功后删除
+		onHandlePictureCardRemove(files = []) {
 			const that = this;
 
-			const { url } = file;
-
-			that.upload = {
-				...that.upload,
-				imageUrl: url,
-				visible: true
-			};
-		},
-		onHandlePictureCardRemove(file) {
-			const that = this;
-
-			const { response = {} } = file;
-			const { filename = [] } = response;
-			const [{ path }] = filename[0] ? filename : [{}];
-
-			that.fileList = that.fileList.filter((item = {}) => {
-				if (item === path) return false;
-				return true;
-			});
-
-			that.upload = {
-				...that.upload,
-				imageUrl: '',
-				visible: false
-			};
+			// 删除图片
+			that.files = files;
 		},
 		onHandleSubmitForm(formName) {
 			const that = this;
 
-			const { ruleForm, fileList } = that;
+			const { ruleForm, files = [] } = that;
 
 			that.$refs[formName].validate(valid => {
 				if (valid) {
-					that.$emit('onHandleSubmit', { ...ruleForm, fileList });
+					that.$emit('onHandleSubmit', { ...ruleForm, files });
 				} else {
-					console.log('error submit!!');
+					// console.log('error submit!!');
 					return false;
 				}
 			});
@@ -246,6 +230,8 @@ export default {
 					adcd,
 					lttd,
 					dayCap,
+					wsObj,
+					wsReg,
 					// totV,
 					// dsincp,
 					// desHead,
@@ -256,7 +242,11 @@ export default {
 					prcd,
 					runCond,
 					lgtd,
-					compym
+					compym,
+					fzrnm,
+					fzrtel,
+
+					files
 				} = data;
 
 				/*
@@ -296,19 +286,19 @@ export default {
 					lgtd: lgtd + '',
 					lttd: lttd + '',
 					freshV: freshV + '',
-					dayCap:  Number(dayCap),
-					pipeSum:  '',
-					wsReg: '',
-					wsObj:  '',
-					wsPp:  Number(wsPp),
-					wwCond:  '',
-					dflcd:  '',
+					dayCap,
+					pipeSum: '',
+					wsReg,
+					wsObj,
+					wsPp,
+					wwCond: '',
+					dflcd: '',
 					runCond: runCond + '',
-					ts:  '',
-					nt:  '',
+					ts: '',
+					nt: '',
 					syly: '',
-					fzrnm:  '',
-					fzrtel:  '',
+					fzrnm,
+					fzrtel,
 					adcd: adcd + ''
 				};
 				//	Object.keys(data).forEach((key = '') => {
@@ -319,23 +309,33 @@ export default {
 					if (item.name === 'wfctCd') {
 						item.disabled = true;
 						return true;
-					 } //else {
-                        // 	item.disabled = false;
-                        // }
+					} //else {
+					// 	item.disabled = false;
+					// }
 				});
+
+				// 填充图片
+				if (Array.isArray(files) && files[0]) {
+					that.files = files;
+					that.fileList = that.files.map((item = {}) => ({
+						name: item.fileName,
+						url: window.static_baseUrl + '/' + item.filePath
+					}));
+				}
 			}
 		},
 		// 初始化分区
 		_initPartition() {
 			const that = this;
+
 			const { cwsCd } = that.data;
+
 			that.formList.find((item = {}) => {
 				if (item.name === 'cwsCd') {
 					const children = that.get_partition;
-					const [{ value }] = children;
+					const [{ value }] = Array.isArray(children) && children[0] ? children : [{}];
 					cwsCd ? (that.ruleForm[item.name] = cwsCd) : (that.ruleForm[item.name] = value);
 					item.children = children;
-					return true;
 				}
 			});
 		},
@@ -393,10 +393,10 @@ export default {
 					name: 'lgtd',
 					label: '经度'
 				},
-				{
-					name: 'freshV',
-					label: '清水库容量(万m³)'
-				},
+				// {
+				// 	name: 'freshV',
+				// 	label: '清水库容量(万m³)'
+				// },
 				{
 					name: 'lttd',
 					label: '纬度'
@@ -406,15 +406,24 @@ export default {
 					label: '日生产能力(万m³)'
 				},
 				{
-					name: 'cwsCd',
-					label: '所属工程',
-					type: 1,
-					value: '0',
-					children: []
+					name: 'wsReg',
+					label: '供水范围'
+				},
+				{
+					name: 'wsObj',
+					label: '供水对象'
 				},
 				{
 					name: 'wsPp',
-					label: '供水人口'
+					label: '供水人口（万人）'
+				},
+				{
+					name: 'fzrnm',
+					label: '负责人'
+				},
+				{
+					name: 'fzrtel',
+					label: '负责人电话'
 				},
 				{
 					name: 'compYm',
@@ -424,13 +433,20 @@ export default {
 					value: ''
 				},
 				{
+					name: 'cwsCd',
+					label: '所属工程',
+					type: 1,
+					value: '0',
+					children: []
+				},
+				{
 					name: 'loc',
 					label: '地址'
 				},
 				{
 					name: 'engMan',
 					label: '管理单位'
-				},
+				}
 			].map((item = {}) => ({
 				type: 0,
 				children: [],
@@ -446,10 +462,10 @@ export default {
 				trigger: 'blur'
 			};
 			const rules = {
-				wfctCd: [{ ...COMMON_RULES_CONFIG, required: true }],
+				wfctCd: [{ ...COMMON_RULES_CONFIG, required: true, validator: notHan, message: '请输入字母或者数字!' }],
 				prcd: [{ ...COMMON_RULES_CONFIG, required: true }],
 				wfctnm: [
-					{...COMMON_RULES_CONFIG, required:true},
+					{ ...COMMON_RULES_CONFIG, required: true },
 					{
 						min: 3,
 						max: 5,
@@ -457,23 +473,42 @@ export default {
 						trigger: 'blur'
 					}
 				],
-				b: [COMMON_RULES_CONFIG],
-				lgtd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
+				lgtd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的经度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lgtd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
+				lttd: [
+					{
+						...COMMON_RULES_CONFIG,
+						required: true,
+						message: '您输入的纬度有误或者最多保存六位小数',
+						validator(rule, value, callback) {
+							if (VDT.lttd(value)) {
+								callback();
+							} else {
+								callback(new Error(this.message));
+							}
+						}
+					}
+				],
+				
+				dayCap: [{ ...COMMON_RULES_CONFIG, required: true, validator: isNumber, message: '您输入的数字有误' }],
+				wsPp: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigits, message: '您输入的不是整数' }],
+
 				compYm: [COMMON_RULES_CONFIG],
-				lttd: [{ ...COMMON_RULES_CONFIG, required: true, validator: isDigitsAndRange }],
 				engMan: [COMMON_RULES_CONFIG],
 				cwsCd: [COMMON_RULES_CONFIG],
-				h: [COMMON_RULES_CONFIG],
-				adcd: [{ ...COMMON_RULES_CONFIG, required: true }],
-				i: [COMMON_RULES_CONFIG],
-				j: [COMMON_RULES_CONFIG],
-				k: [COMMON_RULES_CONFIG],
-				l: [COMMON_RULES_CONFIG],
-				m: [COMMON_RULES_CONFIG],
-				n: [COMMON_RULES_CONFIG],
-				o: [COMMON_RULES_CONFIG],
-				p: [COMMON_RULES_CONFIG],
-				q: [COMMON_RULES_CONFIG]
+				adcd: [{ ...COMMON_RULES_CONFIG, required: true }]
 			};
 
 			const ruleForm = {};
@@ -489,8 +524,8 @@ export default {
 
 					rules[name] = [
 						{
-							...first,
-							message: placeholder
+							message: placeholder,
+							...first
 						},
 						others
 					];
@@ -519,6 +554,4 @@ export default {
 };
 </script>
 
-<style scoped="scoped" lang="scss">
-
-</style>
+<style scoped="scoped" lang="scss"></style>

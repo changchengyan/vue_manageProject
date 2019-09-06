@@ -43,6 +43,8 @@
 									start-placeholder="开始日期"
 									end-placeholder="结束日期"
 									format="yyyy-MM-dd"
+									:clearable="false"
+									@change="getThisTime($event, 0)"
 									@keyup.enter.native="getThisTime($event, 0)"
 								></el-date-picker>
 							</el-form-item>
@@ -52,13 +54,14 @@
 					<div class="chart">
 						<div class="category" ref="ChartCategory0"></div>
 						<div v-show="tabsList[tabIndex].monitorType === '1'" class="chart-radios">
-							<el-radio v-model="tabsList[tabIndex].flag" label="1" @change="showThisChart_waterFactory">浊度</el-radio>
-							<el-radio v-model="tabsList[tabIndex].flag" label="2" @change="showThisChart_waterFactory">余氯</el-radio>
+							<el-radio v-model="tabsList[tabIndex].flag" label="TURB" @change="showThisChart_waterFactory">浊度</el-radio>
+							<el-radio v-model="tabsList[tabIndex].flag" label="CHL" @change="showThisChart_waterFactory">余氯</el-radio>
+							<el-radio v-model="tabsList[tabIndex].flag" label="PH" @change="showThisChart_waterFactory">PH</el-radio>
 						</div>
 					</div>
 					<!-- 表格 -->
 					<div class="globalTable">
-						<table class="innerTable">
+						<table class="innerTable first-no-line">
 							<thead>
 								<tr>
 									<th v-for="item in tabsList[tabIndex].columns" :key="item.key">
@@ -136,7 +139,9 @@
 									range-separator="至"
 									start-placeholder="开始日期"
 									end-placeholder="结束日期"
+									:clearable="false"
 									@change="getThisTime($event, 1)"
+									@keyup.enter.native="getThisTime($event, 1)"
 								></el-date-picker>
 							</el-form-item>
 						</el-form>
@@ -152,7 +157,7 @@
 					</div>
 					<!-- 表格 -->
 					<div class="globalTable">
-						<table class="innerTable">
+						<table class="innerTable first-no-line">
 							<thead>
 								<tr>
 									<th v-for="item in tabsList[tabIndex].columns" :key="item.key">
@@ -230,7 +235,9 @@
 									range-separator="至"
 									start-placeholder="开始日期"
 									end-placeholder="结束日期"
+									:clearable="false"
 									@change="getThisTime($event, 2)"
+									@keyup.enter.native="getThisTime($event, 2)"
 								></el-date-picker>
 							</el-form-item>
 						</el-form>
@@ -327,7 +334,9 @@
 									range-separator="至"
 									start-placeholder="开始日期"
 									end-placeholder="结束日期"
+									:clearable="false"
 									@change="getThisTime($event, 3)"
+									@keyup.enter.native="getThisTime($event, 3)"
 								></el-date-picker>
 							</el-form-item>
 						</el-form>
@@ -342,7 +351,7 @@
 					</div>
 					<!-- 表格 -->
 					<div class="globalTable">
-						<table class="innerTable">
+						<table class="innerTable first-no-line">
 							<thead>
 								<tr>
 									<th v-for="item in tabsList[tabIndex].columns" :key="item.key">
@@ -421,7 +430,7 @@
 					</div>
 					<!-- 表格 -->
 					<div class="globalTable">
-						<table class="innerTable">
+						<table class="innerTable first-no-line">
 							<thead>
 								<tr>
 									<th v-for="item in tabsList[tabIndex].columns" :key="item.key">
@@ -454,7 +463,7 @@
 										<td>
 											<span>{{ item.ysl }}</span>
 										</td>
-										<td class="btns" @click="onHandleListModelVisible({ ...item, $index: i, isWaterMeter: true })">
+										<td class="btns" @click="onHandleListModelVisible({ ...item, $index: i, isWaterMeter: true, isDisabled: false })">
 											<span style="margin-right: 0px">修改</span>
 										</td>
 									</tr>
@@ -488,14 +497,16 @@
 									range-separator="至"
 									start-placeholder="开始日期"
 									end-placeholder="结束日期"
+									:clearable="false"
 									@change="getThisTime($event, 5)"
+									@keyup.enter.native="getThisTime($event, 5)"
 								></el-date-picker>
 							</el-form-item>
 						</el-form>
 					</div>
 					<!-- 表格 -->
 					<div class="globalTable">
-						<table class="innerTable">
+						<table class="innerTable first-no-line">
 							<thead>
 								<tr>
 									<th v-for="item in tabsList[tabIndex].columns" :key="item.key">
@@ -566,9 +577,10 @@
 						<el-form-item label="户名"><el-input v-model="listModel.payload.uname" :disabled="true"></el-input></el-form-item>
 						<el-form-item label="所属区域"><el-input v-model="listModel.payload.adnm" :disabled="true"></el-input></el-form-item>
 						<el-form-item label="管理单位"><el-input v-model="listModel.payload.engman" :disabled="true"></el-input></el-form-item>
+						<el-form-item label="上期水表读数"><el-input v-model="listModel.payload.sqnum" :disabled="true"></el-input></el-form-item>
 						<el-form-item label="当前水表读数"><el-input :value="listModel.payload.bqnum" v-on:input="onHandleCalculation"></el-input></el-form-item>
 						<el-form-item label="用水量"><el-input v-model="listModel.payload.ysl" :disabled="true"></el-input></el-form-item>
-						<el-form-item class="btn"><el-button type="primary" @click="updateWaterFactory">保存</el-button></el-form-item>
+						<el-form-item class="btn"><el-button type="primary" @click="_updateWaterWater">保存</el-button></el-form-item>
 					</template>
 					<template v-else>
 						<el-form-item label="时间"><el-input v-model="listModel.payload.tm" :disabled="true"></el-input></el-form-item>
@@ -583,8 +595,10 @@
 </template>
 
 <script>
-import Tab from '../../../common/components/dseTab';
-import dseNormalModel from '../../../common/components/toast/dseNormalModel';
+
+import Tab from '../../../common/components/DseTab';
+import dseNormalModel from '../../../common/components/toast/DseNormalModel';
+
 import articleTableHead01 from './data/articleTableHead01';
 import articleTableHead11 from './data/articleTableHead11';
 import articleTableHead21 from './data/articleTableHead21';
@@ -609,7 +623,9 @@ import {
 	// 获取管道监测点数据列表
 	getGdjcdList,
 	// 修改监测数据
-	updScjcData
+	updScjcData,
+	// 修改联户表井抄表数据
+	updCcMeterData
 } from '../../../api/interfaces/dataManage_api';
 import { getGcglList } from '../../../api/interfaces/system_api';
 
@@ -695,7 +711,7 @@ export default {
 					// 水压下的 xx 等
 					// 水质下的 检测项  浊度 余氯 等
 					monitorType: '',
-					flag: '1'
+					flag: 'TURB'
 				},
 				{
 					// 二
@@ -838,12 +854,12 @@ export default {
 						},
 						{
 							key: 6,
-							name: '当前水表读数',
+							name: '本期水表读数',
 							id: 'ysprice'
 						},
 						{
 							key: 7,
-							name: '当前累计用水量',
+							name: '本期累计用水量',
 							id: 'ysl'
 						}
 					],
@@ -912,7 +928,8 @@ export default {
 					label: '水位',
 					value: '4'
 				}
-			]
+			],
+			isDelay: true
 		};
 	},
 	mounted() {
@@ -939,21 +956,28 @@ export default {
 		},
 		onHandleCalculation(value) {
 			const that = this;
+
 			const { listModel = {} } = that;
 			const { payload = {} } = listModel;
-			const { bqnum, sqnum, ysl } = payload;
-			const res = value - sqnum;
-			
+			const res = value - payload.sqnum;
+
 			listModel.payload.bqnum = value;
-			if ((bqnum > sqnum) && (res > 0)) {
+			listModel.payload.isDisabled = true;
+			if (payload.bqnum > payload.sqnum && res > 0) {
 				listModel.payload.ysl = res;
-				listModel.payload.isDisabled = false;				
+				listModel.payload.isDisabled = false;
 			} else {
-				listModel.payload.ysl = ysl;
+				listModel.payload.ysl = payload.ysl;
 				listModel.payload.isDisabled = true;
-				that.$message.warning('当前水表读数小于上期水表读数');
+				if (that.isDelay) {
+					that.$message.warning('当前水表读数小于上期水表读数');
+
+					that.isDelay = false;
+					setTimeout(() => {
+						that.isDelay = true;
+					}, 3000);
+				}
 			}
-			console.warn(value, bqnum, sqnum, ysl);
 		},
 		// 初始化分区选择
 		_setAreaList() {
@@ -978,7 +1002,7 @@ export default {
 			that.tabsList[tabIndex].monitorValue = '';
 
 			// 获取工程名称
-			await that._getGcByAreaCode();
+			// await that._getGcByAreaCode();
 			// if ([0, 1, 2, 3].includes(tabIndex)) await that._getGcByAreaCode();
 			that.$nextTick(() => {
 				switch (tabIndex) {
@@ -1034,23 +1058,22 @@ export default {
 		async onHandleSearch() {
 			const that = this;
 
-			await that.onHandleChangeEngineering();
+			await that.onHandleChangeArea();
+			// await that.onHandleChangeEngineering();
 		},
 		// 选择时间 查询当前页签的数据
 		async getThisTime(time) {
 			const that = this;
 
-			// const { tabIndex } = that;
-			const [stm, etm] = time;
-			if (new Date(etm).getTime() - new Date(stm) > 7 * 24 * 60 * 60 * 1000) {
-				this.$message.error('开始时间与结束时间差不大于7天!');
+			// 			const [stm, etm] = time;
+			// 			if (new Date(etm).getTime() - new Date(stm) > 7 * 24 * 60 * 60 * 1000) {
+			// 				this.$message.error('开始时间与结束时间差不大于7天!');
+			//
+			// 				return false;
+			// 			}
 
-				return false;
-			}
-
-			that.$nextTick(() => {
-				that.onHandleChangeArea();
-			});
+			// await that.onHandleChangeArea();
+			await that.onHandleChangeMonitor();
 		},
 		onHandleListModelVisible(payload = {}) {
 			const that = this;
@@ -1059,12 +1082,12 @@ export default {
 			const { tabsList = [], tabIndex } = that;
 			const { head, flag } = tabsList[tabIndex];
 
-			// console.warn(payload);
-			const { jctype, turb, chl, wgage = '', q = '', rz } = payload;
+			const { jctype, turb, chl, ph, wgage = '', q = '', rz } = payload;
 			let _value = '';
 			if (jctype === '1') {
-				flag === '1' && _value === turb;
-				flag === '2' && _value === chl;
+				flag === 'TURB' && _value === turb;
+				flag === 'CHL' && _value === chl;
+				flag === 'PH' && _value === ph;
 			}
 			if (jctype === '2') {
 				_value = wgage;
@@ -1086,12 +1109,6 @@ export default {
 					_value,
 					updatedAt: `${payload.yearno}-${payload.monthno}`
 				}
-				// params: {
-				// 	stcd,
-				// 	tm,
-				// 	stnm,
-				// 	wgage
-				// }
 			};
 		},
 		onHandleListModelSubmit() {
@@ -1143,7 +1160,6 @@ export default {
 		// 三级联动三
 		async onHandleChangeMonitor() {
 			const that = this;
-
 			const { tabIndex, tabsList = [] } = that;
 			const { monitors = [], monitorValue } = tabsList[tabIndex];
 			// alert(JSON.stringify(monitors));
@@ -1192,8 +1208,9 @@ export default {
 			// 清空
 			that.tabsList[tabIndex].engineeringValue = '';
 			that.tabsList[tabIndex].engineerings = [];
-			that.tabsList[tabIndex].monitorValue = '';
 			that.tabsList[tabIndex].monitors = [];
+			that.tabsList[tabIndex].monitorValue = '';
+			that.tabsList[tabIndex].monitorType = '';
 			// 如果父级为空,则不往下执行
 			if ((Array.isArray(areaList) && !areaList[0]) || !Array.isArray(areaList)) return false;
 			/**
@@ -1234,11 +1251,12 @@ export default {
 			const that = this;
 
 			const { tabIndex, tabsList } = that;
-			let { engineeringValue = '', engineerings = [], engineeringType = '', monitorType = '' } = payload;
+			let { engineerings = [], engineeringValue = '', engineeringType = '', monitors = [], monitorValue = '', monitorType = '' } = payload;
 			engineeringValue || (engineeringValue = tabsList[tabIndex].engineeringValue);
 			engineerings[0] || (engineerings = tabsList[tabIndex].engineerings);
 			engineeringType || (engineeringType = tabsList[tabIndex].engineeringType);
-			// alert(JSON.stringify(engineerings));
+			engineeringValue && (that.tabsList[tabIndex].engineeringValue = engineeringValue);
+			engineerings[0] && (that.tabsList[tabIndex].engineerings = engineerings);
 			// 如果父级为空,则不往下执行
 			if ((Array.isArray(engineerings) && !engineerings[0]) || !Array.isArray(engineerings)) return false;
 			/**
@@ -1252,29 +1270,31 @@ export default {
 			const params = {
 				prcode: engineeringValue
 			};
-			return getStJcdBList(params, that).then((results = {}) => {
-				const { status, data } = results;
-				const { list } = data;
+			return getStJcdBList(params, that)
+				.then((results = {}) => {
+					const { status, data } = results;
+					const { list } = data;
 
-				if (status) {
-					const tem = [];
-					const _data = Array.isArray(list)
-						? list
-								.map((item = {}) => ({ ...item, label: item.stnm, value: item.stcd }))
-								.filter((it = {}) => {
-									if (tem.includes(it.value)) return false;
-									tem.push(it.value);
-									return true;
-								})
-						: [];
-					const [{ value = '', jctype = '' }] = _data[0] ? _data : [{}];
-					engineeringValue && (that.tabsList[tabIndex].engineeringValue = engineeringValue);
-					engineerings[0] && (that.tabsList[tabIndex].engineerings = engineerings);
-					monitorType || (that.tabsList[tabIndex].monitorType = jctype);
-					that.tabsList[tabIndex].monitorValue = value;
-					that.tabsList[tabIndex].monitors = _data;
-				}
-			});
+					if (status) {
+						const tem = [];
+						const _data = Array.isArray(list)
+							? list
+									.map((item = {}) => ({ ...item, label: item.stnm, value: item.stcd }))
+									.filter((it = {}) => {
+										if (tem.includes(it.value)) return false;
+										tem.push(it.value);
+										return true;
+									})
+							: [];
+						const [{ value = '', jctype = '' }] = _data[0] ? _data : [{}];
+						monitors[0] || (that.tabsList[tabIndex].monitors = _data);
+						monitorType || (that.tabsList[tabIndex].monitorType = jctype);
+						monitorValue || (that.tabsList[tabIndex].monitorValue = value);
+					}
+				})
+				.catch(e => {
+					console.error(e);
+				});
 		},
 		// 水厂的 图表
 		_drawCategory0() {
@@ -1286,25 +1306,30 @@ export default {
 			startTime = startTime.toLocaleDateString().replace(/\//g, '-');
 			endTime = endTime.toLocaleDateString().replace(/\//g, '-');
 			const chartList = list.map((item = {}) => {
+
+				const time = new Date(item.tm).getTime();
+
 				// 水压监测点
 				if (item.jctype === '1') {
-					if (flag === '1') return [item.tm, item.turb];
-					if (flag === '2') return [item.tm, item.chl];
+					if (flag === 'TURB') return [time, item.turb];
+					if (flag === 'CHL') return [time, item.chl];
+					if (flag === 'PH') return [time, item.ph];
 					// console.warn(item.tm);
-					return [item.tm, item.turb];
+					return [time, item.turb];
 				}
 				//
 				if (item.jctype === '2') {
-					return [item.tm, item.wgage];
+					return [time, item.wgage];
 				}
 				//
 				if (item.jctype === '3') {
-					return [item.tm, item.q];
+					return [time, item.q];
 				}
 				// 水位监测点
 				if (item.jctype === '4') {
-					return [item.tm, item.rz];
+					return [time, item.rz];
 				}
+
 				return [];
 			});
 			let chartParams = {
@@ -1937,8 +1962,8 @@ export default {
 						chartParams = {
 							...chartParams,
 							title: '蓄水池',
-							unit: 'xxx',
-							name: 'xxx'
+							unit: '暂无监测点',
+							name: '暂无监测点'
 						};
 					}
 					break;
@@ -2330,15 +2355,7 @@ export default {
 			const { tabIndex, tabsList } = that;
 			const { flag } = tabsList[tabIndex];
 			const { payload = {} } = that.listModel;
-			const {
-				stcd,
-				tm,
-				jctype,
-				// q, wgage, rz, chl, ph, turb,
-				_value,
-				isDisabled
-			} = payload;
-			if(isDisabled) return that.$message.warning('当前水表读数小于上期水表读数');
+			const { stcd, tm, jctype, _value } = payload;
 			that.listModel.visible = false;
 			/**
 			 * 修改监测数据
@@ -2356,12 +2373,6 @@ export default {
 				stcd,
 				tm,
 				jctype
-				// q,
-				// wgage,
-				// rz,
-				// chl,
-				// ph,
-				// turb
 			};
 			// 水压监测点
 			if (jctype === '1') {
@@ -2392,14 +2403,58 @@ export default {
 			updScjcData(params, that)
 				.then((results = {}) => {
 					const { status } = results;
-					console.info(results);
+
 					if (status) {
 						that.$message.success('修改成功！');
+
+						that.onHandleChangeMonitor();
 					} else {
 						that.$message.error('修改成功！');
 					}
 				})
 				.catch(e => console.warn(e));
+		},
+		_updateWaterWater() {
+			const that = this;
+
+			const { payload = {} } = that.listModel;
+			const { sbbh, yearno, monthno, sqnum, bqnum, ysl, isDisabled } = payload;
+			if (isDisabled) return that.$message.warning('当前水表读数小于上期水表读数');
+			// alert(isDisabled);
+			/**
+			 * 修改联户表井抄表数据
+			 * @param sbbh 		水表编号
+			 * @param yearno   	年份
+			 * @param monthno 	月份
+			 * @param sqnum 	上期读数
+			 * @param bqnum 	本期读数
+			 * @param ysl 		用水量
+			 */
+			const params = {
+				sbbh,
+				yearno,
+				monthno,
+				sqnum,
+				bqnum,
+				ysl
+			};
+			updCcMeterData(params, that)
+				.then((results = {}) => {
+					const { status } = results;
+
+					if (status) {
+						that.$message.success('修改成功！');
+
+						that.onHandleChangeMonitor();
+					} else {
+						that.$message.error('修改成功！');
+					}
+
+					that.listModel.visible = false;
+				})
+				.catch(e => {
+					that.listModel.visible = false;
+				});
 		},
 		getGcglList_(type = '1') {
 			const that = this;
@@ -2456,7 +2511,6 @@ export default {
 				});
 			});
 		},
-
 		/**
 		 *
 		 * @param val  获取当前切换的值 注意 当监测类型为1.水质3.流量时有效，其他隐藏
@@ -2507,7 +2561,6 @@ export default {
 		 */
 
 		showThisChart_waterFactory(val) {
-			console.warn(val);
 			// this._drawCategory0();
 			this.onHandleChangeMonitor();
 		},

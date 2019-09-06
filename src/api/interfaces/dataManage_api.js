@@ -130,6 +130,14 @@ export function getStJcdBList(params, context) {
 		params: params
 	}, context);
 }
+// 获取监测点基本信息列表
+export function updCcMeterData(params, context) {
+	return fetch({
+		url: domainURL.updCcMeterData,
+		method: 'post',
+		params: params
+	}, context);
+}
 
 /**
  *

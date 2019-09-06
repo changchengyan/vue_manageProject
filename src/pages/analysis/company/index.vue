@@ -60,11 +60,11 @@
 </template>
 
 <script>
-import Tab from '../../../common/components/dseTab';
-import articleTableHead11 from './data/articleTableHead11';
-import articleTableData11 from './data/articleTableData11';
-import articleTableHead21 from './data/articleTableHead21';
-import articleTableData21 from './data/articleTableData21';
+import Tab from '../../../common/components/DseTab';
+import listHead1 from './data/articleTableHead11';
+import listTable1 from './data/articleTableData11';
+import listHead2 from './data/articleTableHead21';
+import listTable2 from './data/articleTableData21';
 import commonEcharts from './data/commonEcharts';
 
 const { ArticleBarParams1, AsideBarParams1, AsideBarParams2 } = commonEcharts;
@@ -99,10 +99,10 @@ export default {
 		return {
 			globalTabIndex: 0,
 			globalTabs: ['按子公司统计', '按行政区域统计'],
-			articleTableHead11,
-			articleTableData11,
-			articleTableHead21,
-			articleTableData21
+			articleTableHead11:listHead1,
+			articleTableData11:listTable1,
+			articleTableHead21:listHead2,
+			articleTableData21:listTable2
 		};
 	},
 	mounted() {
@@ -121,41 +121,44 @@ export default {
 
 			that.globalTabIndex = globalTabIndex;
 			that.$nextTick(() => {
-				switch (globalTabIndex) {
-					case 0:
-						ArticleBarEle11 = that.$echarts.init(that.$refs.ArticleBarEle11);
-						ArticleBarEle12 = that.$echarts.init(that.$refs.ArticleBarEle12);
-						ArticleBarEle13 = that.$echarts.init(that.$refs.ArticleBarEle13);
-						ArticleBarEle14 = that.$echarts.init(that.$refs.ArticleBarEle14);
-						ArticleBarEle15 = that.$echarts.init(that.$refs.ArticleBarEle15);
-						ArticleBarEle16 = that.$echarts.init(that.$refs.ArticleBarEle16);
-						ArticleBarEle17 = that.$echarts.init(that.$refs.ArticleBarEle17);
-						ArticleBarEle18 = that.$echarts.init(that.$refs.ArticleBarEle18);
-						ArticleBarEle19 = that.$echarts.init(that.$refs.ArticleBarEle19);
-						ArticleBarEle110 = that.$echarts.init(that.$refs.ArticleBarEle110);
 
-						AsideBarEle11 = that.$echarts.init(that.$refs.AsideBarEle11);
-						AsideBarEle12 = that.$echarts.init(that.$refs.AsideBarEle12);
-						AsideBarEle13 = that.$echarts.init(that.$refs.AsideBarEle13);
-						break;
-					case 1:
-						ArticleBarEle21 = that.$echarts.init(that.$refs.ArticleBarEle21);
-						ArticleBarEle22 = that.$echarts.init(that.$refs.ArticleBarEle22);
-						ArticleBarEle23 = that.$echarts.init(that.$refs.ArticleBarEle23);
-						ArticleBarEle24 = that.$echarts.init(that.$refs.ArticleBarEle24);
-						ArticleBarEle25 = that.$echarts.init(that.$refs.ArticleBarEle25);
-						ArticleBarEle26 = that.$echarts.init(that.$refs.ArticleBarEle26);
+				setTimeout(()=>{
+					switch (globalTabIndex) {
+						case 0:
+							ArticleBarEle11 = that.$echarts.init(that.$refs.ArticleBarEle11);
+							ArticleBarEle12 = that.$echarts.init(that.$refs.ArticleBarEle12);
+							ArticleBarEle13 = that.$echarts.init(that.$refs.ArticleBarEle13);
+							ArticleBarEle14 = that.$echarts.init(that.$refs.ArticleBarEle14);
+							ArticleBarEle15 = that.$echarts.init(that.$refs.ArticleBarEle15);
+							ArticleBarEle16 = that.$echarts.init(that.$refs.ArticleBarEle16);
+							ArticleBarEle17 = that.$echarts.init(that.$refs.ArticleBarEle17);
+							ArticleBarEle18 = that.$echarts.init(that.$refs.ArticleBarEle18);
+							ArticleBarEle19 = that.$echarts.init(that.$refs.ArticleBarEle19);
+							ArticleBarEle110 = that.$echarts.init(that.$refs.ArticleBarEle110);
 
-						AsideBarEle21 = that.$echarts.init(that.$refs.AsideBarEle21);
-						AsideBarEle22 = that.$echarts.init(that.$refs.AsideBarEle22);
-						AsideBarEle23 = that.$echarts.init(that.$refs.AsideBarEle23);
-						break;
-					default:
-						break;
-				}
+							AsideBarEle11 = that.$echarts.init(that.$refs.AsideBarEle11);
+							AsideBarEle12 = that.$echarts.init(that.$refs.AsideBarEle12);
+							AsideBarEle13 = that.$echarts.init(that.$refs.AsideBarEle13);
+							break;
+						case 1:
+							ArticleBarEle21 = that.$echarts.init(that.$refs.ArticleBarEle21);
+							ArticleBarEle22 = that.$echarts.init(that.$refs.ArticleBarEle22);
+							ArticleBarEle23 = that.$echarts.init(that.$refs.ArticleBarEle23);
+							ArticleBarEle24 = that.$echarts.init(that.$refs.ArticleBarEle24);
+							ArticleBarEle25 = that.$echarts.init(that.$refs.ArticleBarEle25);
+							ArticleBarEle26 = that.$echarts.init(that.$refs.ArticleBarEle26);
 
-				that._drawArticle();
-				that._drawAside();
+							AsideBarEle21 = that.$echarts.init(that.$refs.AsideBarEle21);
+							AsideBarEle22 = that.$echarts.init(that.$refs.AsideBarEle22);
+							AsideBarEle23 = that.$echarts.init(that.$refs.AsideBarEle23);
+							break;
+						default:
+							break;
+					}
+					that._drawArticle();
+					that._drawAside();
+				},1000);
+
 			});
 		},
 		// 绘制左侧 echarts

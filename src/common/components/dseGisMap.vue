@@ -1,3 +1,4 @@
+
 <template>
     <div style="width: 100%;height: 100%;">
         <div id="gisMap">
@@ -312,7 +313,7 @@
                 </template>
                 <!--      水厂-->
                 <template v-if="popupInfoWindow.type=='shuichang'">
-                    <dse-separating-tabs :tabs="['运行组态','监测信息','视频监控','基础信息','巡检记录']" @separatingTabIndex="sc_tabIndex">
+                    <dse-separating-tabs :tabs="['平面布置','运行组态','视频信息','巡检信息','基础信息']" @separatingTabIndex="sc_tabIndex">
                         <toggle-water-factory :factoryId="temp_id" ref="sc" :factoryName="initName" />
                     </dse-separating-tabs>
                 </template>
@@ -368,7 +369,7 @@
                 <div class="list-search">
                     <div class="searchItem" v-for="(val,index) in tooltipLists" :key="index">
                         <div class="col">
-                            <img :src="DSE.static_baseUrl+'/images/symbol/'+val.icon+'.png'" alt="">
+                            <img :src="local_staticPath+'/images/symbol/'+val.icon+'.png'" alt="">
                             <span>{{val.name}}</span>
                         </div>
                     </div>
@@ -446,6 +447,12 @@
 </template>
 
 <script>
+
+    /**
+     *  特别说明   该文件不是 公共组件！！！！！！！   是中转和业务集散地  是伪组件
+     *
+     */
+
     import * as esriLoader from 'esri-loader';
 
     import ToggleSk from '../../pages/home_tabs/sk/toggleSk';
@@ -460,21 +467,30 @@
 
 
     import AllwayshowModel from '../../pages/home_tabs/showAllModel/sModel';
-    import DseLoadingAnimation from './dseLoadingAnimation';
-    import DseSeparatingTabs from './dseSeparatingTabs';
-    import DseBgModel from './toast/dseBgModel';
-    import DseGisModel from './toast/dseGisModel';
-    import DseNormalModel from './toast/dseNormalModel';
+    import DseLoadingAnimation from './DseLoadingAnimation';
+    import DseSeparatingTabs from './DseSeparatingTabs';
+    import DseBgModel from './toast/DseBgModel';
+    import DseGisModel from './toast/DseGisModel';
+    import DseNormalModel from './toast/DseNormalModel';
 
     import {formatDegree} from '../../utils/gisUtils';
+    import {DSE} from '../../moduleConfig'
+
+    import {
+        getBzgcxx,
+        getRzjcList,
+        getScgcxx,
+        getSljcList,
+        getSzJcList,
+        getYljcList
+    } from '../../api/interfaces/oneMap_api';
     import {getStJcdBList} from '../../api/interfaces/system_api';
 
-
     let options = {
-        url: window.DSE.arcgis_startJS,
-        dojoConfig: window.DSE.gisConfig
+        url: DSE.arcgis_startJS,
+        dojoConfig: DSE.gisConfig
     };
-    esriLoader.loadCss(window.DSE.arcgis_mainCss);
+    esriLoader.loadCss(DSE.arcgis_mainCss);
 
     let exportBase64_func = null; //导出的 函数
     // let loadLayerAllData_func = null;
@@ -641,6 +657,7 @@
                 baoGuanGraphic: null,
                 popupGraphic: {},
                 initName:'', //获取 当前点击的点图层的 名字
+                local_staticPath:DSE.static_baseUrl, // 本地的 静态资源文件前缀
             };
         },
         methods: {
@@ -1184,18 +1201,12 @@
                             view: that.view
                         });
 
-                        //配置文件中自带空间数据
+                        //配置文件中自带空间数据  如果 配置文件里面有数据 就直接加载数据，没有就从接口里面拽去数据
                         loadJSON_func = function (layerID) {
                             let layer = that.map.findLayerById(layerID);
-
-                            console.log(layerID);
-
                             let layerInfo = layerInfos[layerID];
 
-                            console.log(layerInfo);
-                            console.log('_____________');
-
-
+                            // 渲染 当前 页面的 要素
                            function inner_draw(features){
                                 features.forEach(feature => {
                                     let graphic = new Graphic();
@@ -1241,50 +1252,230 @@
                                 inner_draw( layerInfo.features);
                             }else{
 
-                                console.log('没数据啊');
-                                // 水质：1； 流量：3；水压：2；水位：4；视频：5；
-                                let type = null ; // 用来缓存当前的  站点类型的参数 (监测站点类)
-
+                                let promiseFetch = null;
                                 switch (layerID) {
+                                    case 'shuichang':
+                                        promiseFetch =getScgcxx({
+                                            'adcd': '',
+                                            'keyname': '',
+                                            'pageNum':'1',
+                                            'pageSize': '10000'
+                                        },that);
+                                        break;
+                                    case 'bengzhan':
+                                        promiseFetch = getBzgcxx({
+                                            adcd:'',
+                                            keyname:'',
+                                            pageNum:'1',
+                                            pageSize:'10000'
+                                        });
+                                        break;
                                     case 'shuizhi':
-                                        type = '1';
+                                        promiseFetch = getSzJcList({
+                                            adcd:'',
+                                            keyname:''
+                                        },that);
                                         break;
                                     case 'yali':
-                                        type = '2';
+                                        promiseFetch = getYljcList({
+                                            adcd:'',
+                                            keyname:''
+                                        },that);
                                         break;
                                     case 'liuliang':
-                                        type = '3';
+                                        promiseFetch = getSljcList({
+                                            adcd:'',
+                                            keyname:''
+                                        },that);
                                         break;
                                     case 'shuiwei':
-                                        type = '4';
+                                        promiseFetch = getRzjcList({
+                                            adcd:'',
+                                            keyname:''
+                                        },that);
                                         break;
                                     case 'shipin':
-                                        type = '5';
+                                        promiseFetch = getStJcdBList({
+                                            jctype:'5'
+                                        },that);
                                         break;
                                 }
 
-                                getStJcdBList({
-                                    jctype:type
-                                },that).then(res=>{
-                                    console.log(res);
-                                    let {data} = res;
-                                    let {list} = data;
-                                    list = list&&list.length>0?list:[];
-                                    list.map(val=>{
-                                        layerInfo.features.push({
-                                            attributes:{
-                                                ...val,
-                                                value:0.32,
-                                                normalVal:'≤0.5'
-                                            },
-                                            geometry:{
-                                                x:val.lgtd,
-                                                y:val.lttd
-                                            }
-                                        }) ;
+                                if(layerID=='shuichang')
+                                {
+                                    promiseFetch.then(res=>{
+                                        let {data} = res;
+                                        let {list} = data;
+                                        list = list&&list.length>0?list:[];
+                                        list.map(val=>{
+                                            layerInfo.features.push({
+                                                attributes:{
+                                                    ...val,
+                                                    value:val.q,
+                                                    normalVal:val.q+2,
+                                                    eleId:val.wfctCd,
+                                                    id:val.wfctCd,
+                                                    name:val.wfctnm,
+                                                    status:val.jcTypeNm?true:false
+                                                },
+                                                geometry:{
+                                                    x:val.lgtd,
+                                                    y:val.lttd
+                                                }
+                                            }) ;
+                                        });
+                                        inner_draw(layerInfo.features);
                                     });
-                                    inner_draw(layerInfo.features);
-                                });
+                                }else if(layerID=='bengzhan')
+                                {
+                                        promiseFetch.then(res=>{
+                                            let {data} = res;
+                                            let {list} = data;
+                                            list = list&&list.length>0?list:[];
+                                            list.map(val=>{
+                                                layerInfo.features.push({
+                                                    attributes:{
+                                                        ...val,
+                                                        eleId:val.pumpCd,
+                                                        id:val.pumpCd,
+                                                        name:val.pumpNm,
+                                                        status:val.jcTypeNm?true:false
+                                                    },
+                                                    geometry:{
+                                                        x:val.lgtd,
+                                                        y:val.lttd
+                                                    }
+                                                }) ;
+                                            });
+                                            inner_draw(layerInfo.features);
+                                        });
+
+                                }else if(layerID=='shuizhi')
+                                {
+                                    promiseFetch.then(res=>{
+                                        let {data} = res;
+                                        data = data&&data.length>0?data:[];
+                                        data.map(val=>{
+                                            layerInfo.features.push({
+                                                attributes:{
+                                                    ...val,
+                                                    value:0.32,
+                                                    normalVal:'≤0.5',
+                                                    id:val.stcd,
+                                                    eleId:val.stcd,
+                                                    name:val.stnm,
+                                                    area:val.adnm,
+                                                    time:val.tm,
+                                                    status:val.warnCount&&parseInt(val.warnCount)>0?true:false,
+                                                    paramsItem:[
+                                                        {
+                                                            value:val.ph,
+                                                            normalVal:val.phRange,
+                                                            type:'PH'
+                                                        },
+                                                        {
+                                                            value:val.turb,
+                                                            normalVal:val.turbRange,
+                                                            type:'turb'
+                                                        },
+                                                        {
+                                                            value:val.chl,
+                                                            normalVal:val.chlRange,
+                                                            type:'cl'
+                                                        }
+                                                    ]
+                                                },
+                                                geometry:{
+                                                    x:val.lgtd,
+                                                    y:val.lttd
+                                                }
+                                            }) ;
+                                        });
+                                        console.log(layerInfo.features);
+                                        inner_draw(layerInfo.features);
+                                    });
+                                }else if(layerID=='liuliang')
+                                {
+                                    promiseFetch.then(res=>{
+                                        let {data} = res;
+                                        data = data&&data.length>0?data:[];
+                                        data.map(val=>{
+                                            layerInfo.features.push({
+                                                attributes:{
+                                                    ...val,
+                                                    value:0.32,
+                                                    normalVal:'≤0.5',
+                                                    id:val.stcd,
+                                                    eleId:val.stcd,
+                                                    name:val.stnm,
+                                                    area:val.adnm,
+                                                    time:val.tm,
+                                                    status:val.warnCount&&parseInt(val.warnCount)>0?true:false
+                                                },
+                                                geometry:{
+                                                    x:val.lgtd,
+                                                    y:val.lttd
+                                                }
+                                            }) ;
+                                        });
+                                        console.log(layerInfo.features);
+                                        inner_draw(layerInfo.features);
+                                    });
+                                }else if(layerID=='shuiwei')
+                                {
+                                    promiseFetch.then(res=>{
+                                        let {data} = res;
+                                        data = data&&data.length>0?data:[];
+                                        data.map(val=>{
+                                            layerInfo.features.push({
+                                                attributes:{
+                                                    ...val,
+                                                    value:0.32,
+                                                    normalVal:'≤0.5',
+                                                    id:val.stcd,
+                                                    eleId:val.stcd,
+                                                    name:val.stnm,
+                                                    area:val.adnm,
+                                                    time:val.tm,
+                                                    status:val.warnCount&&parseInt(val.warnCount)>0?true:false
+                                                },
+                                                geometry:{
+                                                    x:val.lgtd,
+                                                    y:val.lttd
+                                                }
+                                            }) ;
+                                        });
+                                        console.log(layerInfo.features);
+                                        inner_draw(layerInfo.features);
+                                    });
+                                }else if(layerID=='yali')
+                                {
+                                    promiseFetch.then(res=>{
+                                        let {data} = res;
+                                        data = data&&data.length>0?data:[];
+                                        data.map(val=>{
+                                            layerInfo.features.push({
+                                                attributes:{
+                                                    ...val,
+                                                    value:0.32,
+                                                    normalVal:'≤0.5',
+                                                    id:val.stcd,
+                                                    eleId:val.stcd,
+                                                    name:val.stnm,
+                                                    area:val.adnm,
+                                                    time:val.tm,
+                                                    status:val.warnCount&&parseInt(val.warnCount)>0?true:false
+                                                },
+                                                geometry:{
+                                                    x:val.lgtd,
+                                                    y:val.lttd
+                                                }
+                                            }) ;
+                                        });
+                                        console.log(layerInfo.features);
+                                        inner_draw(layerInfo.features);
+                                    });
+                                }
                                 return ;
                             }
                             //显示infoWindow
@@ -1319,47 +1510,6 @@
                                         };
                                         that.model_monitor_point.flow.push(obj);
                                     });
-                                    // getQDataList({
-                                    //   ids:dataIDs
-                                    // },that).then(res=>{
-                                    //   let {data} = res;
-                                    //   let rows = data;
-                                    //   // console.log('liuliang属性数据',data);
-                                    //   //按空间数据匹配，因为对应的属性数据有可能不存在
-                                    //   // that.map.findLayerById(layerid).graphics.forEach(graphic => {
-                                    //     // mps = that.view.toScreen(graphic.geometry);
-                                    //     // let obj = {
-                                    //     //   x: graphic.geometry.x,
-                                    //     //   y: graphic.geometry.y,
-                                    //     //   centerScreenX: mps.x,
-                                    //     //   centerScreenY: mps.y,
-                                    //     //   modelTip:graphic.attributes.name ,  // gis 弹窗的 标题
-                                    //     //   value: null,
-                                    //     //   status: true,
-                                    //     //   id: graphic.attributes.id,
-                                    //     //   layerID:layerid,
-                                    //     //   list:[],
-                                    //     //   graphic: graphic
-                                    //     // };
-                                    //     that.model_monitor_point.flow.forEach(obj => {
-                                    //     if(rows&&rows.length>0){
-                                    //       for(let i=0;i<rows.length;i++){
-                                    //         // if(rows[i].mpCd == graphic.attributes.id){
-                                    //           if(rows[i].mpCd == obj.id){
-                                    //           let maxVal= rows[i].maxVal;
-                                    //           let minVal= rows[i].minVal;
-                                    //           maxVal = parseFloat(maxVal);
-                                    //           minVal = parseFloat(minVal);
-                                    //           obj.value = rows[i].Q+'m³/s';
-                                    //           obj.status = parseFloat(rows[i].Q)>=minVal&&parseFloat(rows[i].Q)<=maxVal;
-                                    //           obj.id = rows[i].mpCd;
-                                    //           break;
-                                    //         }
-                                    //       }
-                                    //     }
-                                    //     // that.model_monitor_point.flow.push(obj);
-                                    //   });
-                                    // });
                                     break;
                                 case 'yali':  // 压力
                                     that.map.findLayerById(layerid).graphics.forEach(graphic => {
@@ -1379,51 +1529,6 @@
                                         };
                                         that.model_monitor_point.press.push(obj);
                                     });
-                                    // getPressureList({
-                                    //   ids:dataIDs
-                                    // },that).then(res=>{
-                                    //   let {data} = res;
-                                    //   let rows = data;
-                                    //   // that.map.findLayerById(layerid).graphics.forEach(graphic => {
-                                    //   //   mps = that.view.toScreen(graphic.geometry);
-                                    //   //   let obj = {
-                                    //   //     x: graphic.geometry.x,
-                                    //   //     y: graphic.geometry.y,
-                                    //   //     centerScreenX: mps.x,
-                                    //   //     centerScreenY: mps.y,
-                                    //   //     modelTip:graphic.attributes.name ,  // gis 弹窗的 标题
-                                    //   //     value: null,
-                                    //   //     status: true,
-                                    //   //     id: graphic.attributes.id,
-                                    //   //     layerID:layerid,
-                                    //   //     list:[],
-                                    //   //     graphic: graphic
-                                    //   //   };
-                                    //   that.model_monitor_point.press.forEach(obj => {
-                                    //     if(rows&&rows.length>0){
-
-                                    //       for(let i=0;i<rows.length;i++){
-                                    //         // if(rows[i].id == graphic.attributes.id){
-                                    //           if(rows[i].id == obj.id){
-                                    //           // let maxVal= rows[i].maxVal;
-                                    //           // let minVal= rows[i].minVal;
-                                    //           // maxVal = parseFloat(maxVal);
-                                    //           // minVal = parseFloat(minVal);
-
-                                    //           obj.value = rows[i].presData+'MPa';
-                                    //           obj.status = false;
-                                    //           obj.id = rows[i].id;
-                                    //           break;
-                                    //         }
-                                    //       }
-
-                                    //     }
-                                    //     // that.model_monitor_point.press.push(obj);
-                                    //   });
-                                    //   // that.showAll_waterPontModelFlag = true;
-                                    //   // that.$refs.moreModel.showMoreModel(true);
-                                    //   // that.$refs.moreModel.toggleShowModel('press',that.model_monitor_point.press);
-                                    // });
                                     break;
                                 case 'shuizhi':  // 水质
                                     that.map.findLayerById(layerid).graphics.forEach(graphic => {
@@ -1443,50 +1548,6 @@
                                         };
                                         that.model_monitor_point.qc.push(obj);
                                     });
-                                    // getWqList({
-                                    // ids:dataIDs,
-                                    //   keywords:'CL,TURB'
-                                    // },that).then(res=>{
-                                    //   let {data} = res;
-                                    //   let rows = data?data:{};
-                                    //   // that.map.findLayerById(layerid).graphics.forEach(graphic => {
-                                    //   //   mps = that.view.toScreen(graphic.geometry);
-                                    //   //   let obj = {
-                                    //   //     x: graphic.geometry.x,
-                                    //   //     y: graphic.geometry.y,
-                                    //   //     centerScreenX: mps.x,
-                                    //   //     centerScreenY: mps.y,
-                                    //   //     modelTip:graphic.attributes.name ,  // gis 弹窗的 标题
-                                    //   //     value: null,
-                                    //   //     status: true,
-                                    //   //     id: graphic.attributes.id,
-                                    //   //     layerID:layerid,
-                                    //   //     list:[],
-                                    //   //     graphic: graphic
-                                    //   //   };
-                                    //   that.model_monitor_point.qc.forEach(obj => {
-                                    //     if(rows&&rows.length>0){
-                                    //       obj.list = [];
-                                    //       for(let i=0;i<rows.length;i++){
-                                    //         // if(rows[i].mpCd == graphic.attributes.id){
-                                    //           if(rows[i].mpCd == obj.id){
-                                    //           let temp_json  = {};
-
-                                    //           temp_json.type = rows[i].item;
-                                    //           temp_json.id = rows[i].mpCd;
-
-                                    //           temp_json.FCHL = rows[i].FCHL;//余氯
-                                    //           temp_json.TURB = rows[i].TURB;//浊度
-                                    //           temp_json.status=1;
-                                    //           obj.list.push(temp_json);
-                                    //         }
-                                    //       }
-                                    //     }
-
-                                    //     that.model_monitor_point.qc.push(obj);
-                                    //   });
-
-                                    // });
                                     break;
                                 case 'shipin':  // 视频
                                     break;
@@ -2206,7 +2267,7 @@
                                 res = res.replace(/data:image\/png;base64,/, '');
                                 obj.image = res;
                                 // exportPipeBaseInfo(obj,that).then(res=>{
-                                //   let temp_fileURL = window.DSE.base_api_url+'/'+res.data;
+                                //   let temp_fileURL = DSE.base_api_url+'/'+res.data;
                                 //   window.location.href=temp_fileURL;
                                 // });
                             }).catch(err => {
@@ -2787,6 +2848,7 @@
                             this.popupInfoWindow.monitor_isVisiable = true;
                              this.monitor_waterComponent = FLOWMODULE;
                             this.$refs.chartModel.showModel();
+                            that.temp_id = val.eleId;
 
                             // this.showChartModel({
                             //   id:val.eleId,
@@ -2799,6 +2861,7 @@
                             this.popupInfoWindow.isVisible = false;
                             this.popupInfoWindow.monitor_isVisiable = true;
                              this.monitor_waterComponent = PRESSMODULE;
+                            that.temp_id = val.eleId;
                             // this.bgModelFlag = false;
                             // this.showChartModel({
                             //   id:val.eleId,
@@ -2810,6 +2873,7 @@
                         case 'shuizhi':  // 水质
                             this.popupInfoWindow.isVisible = false;
                             this.popupInfoWindow.monitor_isVisiable = true;
+                            that.temp_id = val.eleId;
                             // this.bgModelFlag = false;
                             // this.showChartModel({
                             //   id:val.eleId,
@@ -2837,6 +2901,7 @@
                             this.popupInfoWindow.monitor_isVisiable = true;
                               this.monitor_waterComponent = WATERMODULE;
                             this.$refs.chartModel.showModel();
+                            that.temp_id = val.eleId;
 
                             // this.bgModelFlag = false;
                             // this.showChartModel({
@@ -3007,7 +3072,7 @@
             formate_interfaceType(val) {
                 let temp_val = val;
 
-                let list = window.DSE.interFace;
+                let list = DSE.interFace;
 
                 for (let i = 0; i < list.length; i++) {
                     if (list[i].value == val) {
@@ -3032,7 +3097,7 @@
             },
             formate_orderLev(val) {
                 let temp_val = val;
-                let list = window.DSE.dangerlist;
+                let list = DSE.dangerlist;
                 for (let i = 0; i < list.length; i++) {
                     if (list[i].value == val) {
                         temp_val = list[i].label;
@@ -3043,7 +3108,7 @@
             },
             formate_orderType(val) {
                 let temp_val = val;
-                let list = window.DSE.repairOrderTypes;
+                let list = DSE.repairOrderTypes;
                 for (let i = 0; i < list.length; i++) {
                     if (list[i].value == val) {
                         temp_val = list[i].label;
@@ -3054,7 +3119,7 @@
             },
             formate_status(val) {
                 let temp_val = val;
-                let list = window.DSE.orderStatus;
+                let list = DSE.orderStatus;
                 for (let i = 0; i < list.length; i++) {
                     if (list[i].value == val) {
                         temp_val = list[i].label;

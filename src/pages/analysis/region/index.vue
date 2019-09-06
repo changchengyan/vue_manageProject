@@ -150,8 +150,8 @@
 
 <script>
 import countTo from 'vue-count-to';
-import Tab from '../../../common/components/dseTab';
-import DseBgModel from '../../../common/components/toast/dseBgModel';
+import Tab from '../../../common/components/DseTab';
+import DseBgModel from '../../../common/components/toast/DseBgModel';
 
 
 import dashboards0 from './data/dashboards0';

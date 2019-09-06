@@ -218,7 +218,7 @@
     import DseSelectTips from '../../common/components/DseselectTips';
     import DseEdit from '../../common/components/toast/Dsedit';
     import DseView from '../../common/components/toast/DseView';
-    import DseTableWidthPagination from '../../common/components/dseTableWidthPagination';
+    import DseTableWidthPagination from '../../common/components/DseTableWidthPagination';
 
 
     esriLoader.loadCss(window.DSE.arcgis_mainCss);

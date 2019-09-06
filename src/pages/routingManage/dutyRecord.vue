@@ -13,7 +13,7 @@
 <script>
 
 
-    import DseCalanderEvent from '../../common/components/dseCalanderEvent';
+    import DseCalanderEvent from '../../common/components/DseCalanderEvent';
     export  default {
         components: {DseCalanderEvent},
         data(){
